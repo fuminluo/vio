@@ -7,8 +7,7 @@ import priv.rabbit.vio.service.WebSocketService;
 
 import java.util.List;
 
-import static priv.rabbit.vio.common.Constant.P2PPUSHPATH;
-import static priv.rabbit.vio.common.Constant.PRODUCERPATH;
+import static priv.rabbit.vio.common.Constant.*;
 
 @Service
 public class WebSocketServiceImpl implements WebSocketService {
@@ -17,15 +16,21 @@ public class WebSocketServiceImpl implements WebSocketService {
     private SimpMessagingTemplate template;
 
     @Override
-    public void sendMsg(String msg) {
-        template.convertAndSend(PRODUCERPATH, msg);
+    public void sendToTopic(String msg) {
+        template.convertAndSend(TOPIC_BASE_PATH, msg);
     }
 
     @Override
-    public void send2Users(List<String> users, String msg) {
+    public void sendToUsers(List<String> users, Object msg) {
         users.forEach(userName -> {
-            template.convertAndSendToUser(userName, P2PPUSHPATH, msg);
+            template.convertAndSendToUser(userName, P2P_PUSH_PATH, msg);
         });
     }
+
+    @Override
+    public void sendToUser(String userId, Object msg) {
+        template.convertAndSendToUser(userId,P2P_PUSH_PATH,msg);
+    }
+
 
 }

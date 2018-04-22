@@ -5,24 +5,11 @@
     <title>Spring Boot+WebSocket+广播式</title>
 
 </head>
-<body>
-<noscript><h2 style="color: #ff0000">貌似你的浏览器不支持websocket</h2></noscript>
-<div>
-    <div>
-        <button id="connect" onclick="connectA();">连接</button>
-        <button id="disconnect" disabled="disabled" onclick="disconnect();">断开连接</button>
-    </div>
-    <div id="conversationDiv">
-        <label>输入你的名字</label><input type="text" id="name"/>
-        <button id="sendName" onclick="sendName();">发送</button>
-        <p id="response"></p>
-        <p id="state-info"></p>
-    </div>
-
-</div>
+<link href="/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
 <script src="https://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
 <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+<script src="/js/bootstrap.min.js"></script>
 <script th:inline="javascript">
     var stompClient = null;
     var ws_client = null;
@@ -54,7 +41,7 @@
         'login': '4e95bf7d',
         'passcode': '123456',
         'message': 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiIyOTdlZGUxNzYyZGNjZWUxMDE2MmRjY2VmMWNkMDAwMCIsImV4cCI6MTUyNDMxMzgxMX0.WnrtsR_cZPwRt0oeSRZftOUkFT3H8vvn8d7hjVph3lukaBh6N17pJog5t7bJGcNjyItQJ4XB_uh6QJR1USf8lA',
-        'ack':'client',
+        'ack': 'client',
         // additional header
         'client-id': 'my-client-id'
     };
@@ -73,22 +60,15 @@
                 console.log('已连接【' + frame + '】');
                 setConnected(true);
                 isConnect = true;
-                //4.通过stompClient.subscribe（）订阅服务器的目标是'/topic/getResponse'发送过来的地址，与@SendTo中的地址对应。
-                var subscription = stompClient.subscribe('/topic/getResponse', function (message) {
-                        console.log("接收到消息:"+message.body);
-                        showResponse(message.body);
-                        //message.ack();
-                    },
-                    {ack: 'client'}
-                );
 
-                //subscription.unsubscribe();5.取消订阅
+
+
 
                 //5通过stompClient.subscribe（）订阅服务器的目标是'/user/' + userId + '/msg'接收一对一的推送消息,其中userId由服务端传递过来,用于表示唯一的用户,通过此值将消息精确推送给一个用户
                 stompClient.subscribe('/user/' + userId + '/msg', function (message) {
-                        alert("点对点 消息");
-                        stompClient.send("/ws-push/callback", {}, JSON.stringify({'state': 1, "userId": "4e95bf7d"}));
+                        console.log("接收到点对点消息:" + message.body);
                         showResponse(message.body);
+                        stompClient.send("/ws-push/callback", {}, JSON.stringify({'state': 1, "userId": "4e95bf7d"}));
                     }
                 );
 
@@ -112,35 +92,24 @@
 
     }
 
-    function connect() {
-        var socket = new SockJS('/endpointWisely'); //1连接SockJS的endpoint是“endpointWisely”，与后台代码中注册的endpoint要一样。
-        stompClient = Stomp.over(socket);//2创建STOMP协议的webSocket客户端。
-        stompClient.connect({login: userId}, function (frame) {//3连接webSocket的服务端。
-            setConnected(true);
-            console.log('开始进行连接Connected: ' + frame);
+    //订阅主题
+    function subscribeTopic() {
+        var topic_name = $('#topic_name').val();
+        //4.通过stompClient.subscribe（）订阅服务器的目标是'/topic/getResponse'发送过来的地址，与@SendTo中的地址对应。
+        var subscription = stompClient.subscribe(topic_name, function (message) {
+                console.log("接收到消息:" + message.body);
+                showResponse(message.body);
+                message.ack();
+            },
+            {ack: 'client'}
+        );
+        //subscription.unsubscribe();5.取消订阅
+    }
 
-            isConnect = true;
-
-            //4通过stompClient.subscribe（）订阅服务器的目标是'/topic/getResponse'发送过来的地址，与@SendTo中的地址对应。
-            stompClient.subscribe('/topic/getResponse', function (respnose) {
-
-                showResponse(JSON.parse(respnose));
-            });
-            //4通过stompClient.subscribe（）订阅服务器的目标是'/user/' + userId + '/msg'接收一对一的推送消息,其中userId由服务端传递过来,用于表示唯一的用户,通过此值将消息精确推送给一个用户
-            stompClient.subscribe('/user/' + userId + '/msg', function (respnose) {
-            });
-
-            //连接测试，发送和接收参数都会先调用此方法。如果连接断开会收到 “Whoops! Lost connection to http://localhost:8080/endpointWisely”信息
-            stompClient.debug = function (str) {
-                // append the debug log to a #debug div somewhere in the page using JQuery:
-                //检查是否断开连接
-                if (str.indexOf("Whoops! Lost connection to") >= 0) {
-                    isConnect = false;
-                    alert("连接已断开，请从新连接!");
-                }
-
-            };
-        });
+    //
+    function sendTopicMsg() {
+        var topic_msg = $('#topic_msg').val();
+        stompClient.send("/ws-push/welcome", {}, JSON.stringify({'name': topic_msg}));
     }
 
     //关闭连接
@@ -152,22 +121,55 @@
         console.log("Disconnected");
     }
 
-    function sendName() {
+    function sendToUser() {
         if (!isConnect) {
             alert("连接已经断开");
         } else {
-            var name = $('#name').val();
+            var toUserId = $('#toUserId').val();
+            var content = $('#content').val();
             //通过stompClient.send（）向地址为"/welcome"的服务器地址发起请求，与@MessageMapping里的地址对应。因为我们配置了registry.setApplicationDestinationPrefixes(Constant.WEBSOCKETPATHPERFIX);所以需要增加前缀/ws-push/
-            stompClient.send("/ws-push/welcome", {}, JSON.stringify({'name': name}));
+            stompClient.send("/ws-push/sendToUser", {}, JSON.stringify({'toUserId': toUserId,"content":content}));
         }
-
-
     }
 
     function showResponse(message) {
         document.getElementById('response').innerHTML = message.toString();
 
     }
+
 </script>
+<body>
+<noscript><h2 style="color: #ff0000">貌似你的浏览器不支持websocket</h2></noscript>
+<div>
+    <div>
+        <button id="connect" class="btn btn-success" onclick="connectA();">连接</button>
+        <button id="disconnect"  class="btn btn-danger" disabled="disabled" onclick="disconnect();">断开连接</button>
+        <p id="state-info"></p>
+    </div>
+
+    <div id="conversationDiv">
+        <label>输入用户id</label><input type="text" id="toUserId" value="4e95bf7d"/>
+        <label>输入内容</label><input type="text" id="content"/>
+        <button id="sendName"   class="btn btn-info" onclick="sendToUser();">发送点对点</button>
+
+    </div>
+
+    <div id="subscribeDiv">
+        <label>输入主题名称：</label><input type="text" id="topic_name" value="/topic/getResponse"/>
+        <button id="subscribe_topic"  class="btn btn-info" onclick="subscribeTopic();">订阅主题</button>
+    </div>
+
+
+    <div id="conversationTopic">
+        <label>输入内容</label><input type="text" id="topic_msg"/>
+        <button id="sendTopic"  class="btn btn-info" onclick="sendTopicMsg();">发送主题消息</button>
+        <p id="topic_response"></p>
+    </div>
+
+    <h5>返回消息：</h5><p id="response"></p>
+
+
+</div>
+
 </body>
 </html>

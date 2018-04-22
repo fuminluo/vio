@@ -1,7 +1,6 @@
 package priv.rabbit.vio.controller;
 
 import com.alibaba.fastjson.JSONObject;
-import com.google.common.collect.Lists;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,17 +8,14 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import priv.rabbit.vio.config.SocketSessionRegistry;
-import priv.rabbit.vio.dto.CallackDTO;
-import priv.rabbit.vio.dto.WiselyMessage;
-import priv.rabbit.vio.entity.User;
+import priv.rabbit.vio.dto.websocket.CallackDTO;
+import priv.rabbit.vio.dto.websocket.SendToUserListReq;
+import priv.rabbit.vio.dto.websocket.SendToUserReq;
+import priv.rabbit.vio.dto.websocket.WiselyMessage;
 import priv.rabbit.vio.service.WebSocketService;
 
 import javax.annotation.Resource;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentMap;
 
 @Controller
 public class WebSocketController {
@@ -33,31 +29,53 @@ public class WebSocketController {
     private SocketSessionRegistry socketSessionRegistry;
 
     @GetMapping(value = "/webSocket")
-    public  String index(){
+    public String index() {
         return "/webSocket";
     }
 
+
     @MessageMapping("welcome")//@MessageMapping和@RequestMapping功能类似，用于设置URL映射地址，浏览器向服务器发起请求，需要通过该地址。
     @SendTo("/topic/getResponse")//如果服务器接受到了消息，就会对订阅了@SendTo括号中的地址传送消息。
-    public Object say(WiselyMessage message) throws Exception {
-
-        List<String> users = Lists.newArrayList();
-        users.add(message.getName());//此处写死只是为了方便测试,此值需要对应页面中订阅个人消息的userId
-
-        //一对一的推送消息
-        webSocketService.send2Users(users, "点对点推送消息");
+    public Object sendToTop(WiselyMessage wiselyMessage) {
 
         JSONObject jsonObject = new JSONObject();
-
-        jsonObject.put("topic","主题消息");
+        jsonObject.put("主题信息：", wiselyMessage.getName());
 
         return jsonObject;
     }
 
-
-    @MessageMapping("/callback")//@MessageMapping和@RequestMapping功能类似，用于设置URL映射地址，浏览器向服务器发起请求，需要通过该地址。
-    public void Callack(CallackDTO callackDTO) throws Exception {
-        LOG.info("==state=="+callackDTO.getState());
-        LOG.info("==userId=="+callackDTO.getUserId());
+    /**
+     * 发送点对点消息
+     *
+     * @param sendToUseReq
+     */
+    @MessageMapping("sendToUser")
+    public void sendToUser(SendToUserReq sendToUseReq) {
+        webSocketService.sendToUser(sendToUseReq.getToUserId(), sendToUseReq.getContent());
     }
+
+    /**
+     * 群发消息
+     *
+     * @param sendToUserListReq
+     */
+    @MessageMapping("SendToUserList")
+    public void SendToUserList(SendToUserListReq sendToUserListReq) {
+
+        webSocketService.sendToUsers(sendToUserListReq.getToUserIds(), sendToUserListReq.getContent());
+    }
+
+
+    /**
+     * 消息回掉
+     *
+     * @param callackDTO
+     * @throws Exception
+     */
+    @MessageMapping("/callback")//@MessageMapping和@RequestMapping功能类似，用于设置URL映射地址，浏览器向服务器发起请求，需要通过该地址。
+
+    public void Callack(CallackDTO callackDTO) throws Exception {
+        LOG.info("==state==" + callackDTO.getState() + ",==userId==" + callackDTO.getUserId());
+    }
+
 }

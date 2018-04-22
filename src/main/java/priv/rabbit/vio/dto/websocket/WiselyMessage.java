@@ -1,4 +1,4 @@
-package priv.rabbit.vio.dto;
+package priv.rabbit.vio.dto.websocket;
 
 public class WiselyMessage {
     private String name;

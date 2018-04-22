@@ -1,23 +1,34 @@
-package priv.rabbit.vio.dto;
+package priv.rabbit.vio.dto.websocket;
 
-public class CallackDTO {
+import java.util.List;
 
-    private String userId;
+public class SendToUserListReq {
+    private String fromUserId;
+
+    private List<String> toUserIds;
 
     private String conversationId;
 
     private String messageId;
 
-    private String content;
+    private Object content;
 
     private Integer state;
 
-    public String getUserId() {
-        return userId;
+    public String getFromUserId() {
+        return fromUserId;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setFromUserId(String fromUserId) {
+        this.fromUserId = fromUserId;
+    }
+
+    public List<String> getToUserIds() {
+        return toUserIds;
+    }
+
+    public void setToUserIds(List<String> toUserIds) {
+        this.toUserIds = toUserIds;
     }
 
     public String getConversationId() {
@@ -36,11 +47,11 @@ public class CallackDTO {
         this.messageId = messageId;
     }
 
-    public String getContent() {
+    public Object getContent() {
         return content;
     }
 
-    public void setContent(String content) {
+    public void setContent(Object content) {
         this.content = content;
     }
 
