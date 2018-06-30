@@ -1,21 +1,14 @@
 package priv.rabbit.vio.entity;
 
-import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 
 
-@Entity
-@Table(name = "user")
 public class User implements Serializable {
 
     private static final long serialVersionUID = -4582990628611921616L;
 
-    @Id
-    @GeneratedValue(generator = "uuid")
-    @GenericGenerator(name = "uuid", strategy = "uuid")
     private String userId;
 
     private Long roleId;

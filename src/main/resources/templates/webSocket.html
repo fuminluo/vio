@@ -132,6 +132,30 @@
         }
     }
 
+    function sendFile(isWithText){
+        var inputElement = document.getElementById("file");
+        var fileList = inputElement.files;
+        var file=fileList[0];
+        if(!file) return;
+        stompClient.send(file.name+":fileStart");
+        var reader = new FileReader();
+        //以二进制形式读取文件
+        reader.readAsArrayBuffer(file);
+        //文件读取完毕后该函数响应
+        reader.onload = function loaded(evt) {
+            var blob = evt.target.result;
+            //发送二进制表示的文件
+            stompClient.send(blob);
+            if(isWithText){
+                stompClient.send(file.name+":fileFinishWithText");
+            }else{
+                stompClient.send(file.name+":fileFinishSingle");
+            }
+            console.log("finnish");
+        }
+        inputElement.outerHTML=inputElement.outerHTML; //清空<input type="file">的值
+    }
+
     function showResponse(message) {
         document.getElementById('response').innerHTML = message.toString();
 

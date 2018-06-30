@@ -25,6 +25,7 @@ public class UserController {
     @GetMapping("api/app/v1/user/find/list")
     public Object findUserList() {
         stringRedisTemplate.opsForValue().set("sprinboot-redis-messaage", "message", 10, TimeUnit.SECONDS);
+        System.out.println("》》》8080");
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "123456");
     }
 
