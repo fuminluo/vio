@@ -1,4 +1,4 @@
-package priv.rabbit.vio.config;
+package priv.rabbit.vio.config.websocket;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,8 +7,6 @@ import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
-
-import java.util.List;
 
 /**
  * Created by baiguantao on 2017/8/4.

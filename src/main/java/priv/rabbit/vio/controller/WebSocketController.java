@@ -8,7 +8,7 @@ import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import priv.rabbit.vio.config.SocketSessionRegistry;
+import priv.rabbit.vio.config.websocket.SocketSessionRegistry;
 import priv.rabbit.vio.dto.websocket.CallackDTO;
 import priv.rabbit.vio.dto.websocket.SendToUserListReq;
 import priv.rabbit.vio.dto.websocket.SendToUserReq;

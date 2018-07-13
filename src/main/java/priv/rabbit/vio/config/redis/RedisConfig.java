@@ -1,4 +1,4 @@
-package priv.rabbit.vio.config;
+package priv.rabbit.vio.config.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

@@ -1,4 +1,4 @@
-package priv.rabbit.vio.config;
+package priv.rabbit.vio.config.webFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

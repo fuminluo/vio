@@ -1,4 +1,4 @@
-package priv.rabbit.vio.config;
+package priv.rabbit.vio.config.websocket;
 
 import org.springframework.util.Assert;
 

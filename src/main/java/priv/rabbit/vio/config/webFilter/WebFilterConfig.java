@@ -1,4 +1,4 @@
-package priv.rabbit.vio.config;
+package priv.rabbit.vio.config.webFilter;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;

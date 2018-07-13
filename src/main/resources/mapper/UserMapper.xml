@@ -196,4 +196,7 @@
         </if>
     </select>
 
+    <select id="getPassword" parameterType="java.lang.String" resultType="java.lang.String">
+            SELECT password FROM user WHERE username = #{username}
+    </select>
 </mapper>

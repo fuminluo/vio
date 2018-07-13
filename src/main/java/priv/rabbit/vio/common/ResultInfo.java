@@ -3,7 +3,7 @@ package priv.rabbit.vio.common;
 import com.fasterxml.jackson.annotation.JsonInclude;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class ResultInfo{
+public class ResultInfo<T>{
 
     public static final int SUCCESS = 200;
     public static final int FAILURE = 400;
@@ -13,7 +13,7 @@ public class ResultInfo{
 
     private Integer code;
     private String message;
-    private Object data;
+    private T data;
 
 
     public Integer getCode() {
@@ -36,7 +36,7 @@ public class ResultInfo{
         return data;
     }
 
-    public void setData(Object data) {
+    public void setData(T data) {
         this.data = data;
     }
 
@@ -46,7 +46,7 @@ public class ResultInfo{
         this.message = message;
     }
 
-    public ResultInfo(Integer code, String message, Object data) {
+    public ResultInfo(Integer code, String message, T data) {
         this.code = code;
         this.message = message;
         this.data = data;
