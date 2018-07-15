@@ -1,9 +1,16 @@
 package priv.rabbit.vio.config.shiro;
 
 
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
+import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.mgt.SecurityManager;
+import org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor;
 import org.apache.shiro.spring.web.ShiroFilterFactoryBean;
+import org.apache.shiro.web.mgt.CookieRememberMeManager;
 import org.apache.shiro.web.mgt.DefaultWebSecurityManager;
+import org.apache.shiro.web.servlet.SimpleCookie;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -13,13 +20,16 @@ import java.util.Map;
 @Configuration
 public class ShiroConfig {
 
+
+    private static Logger LOG = LoggerFactory.getLogger(ShiroConfig.class);
+
     @Bean
     public ShiroFilterFactoryBean shirFilter(SecurityManager securityManager) {
         ShiroFilterFactoryBean shiroFilterFactoryBean = new ShiroFilterFactoryBean();
         // 必须设置 SecurityManager
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         // setLoginUrl 如果不设置值，默认会自动寻找Web工程根目录下的"/login.jsp"页面 或 "/login" 映射
-        shiroFilterFactoryBean.setLoginUrl("/notLogin");
+        shiroFilterFactoryBean.setLoginUrl("/api/web/shiro/login.html");
         // 设置无权限时跳转的 url;
         shiroFilterFactoryBean.setUnauthorizedUrl("/notRole");
         // 设置拦截器
@@ -31,13 +41,23 @@ public class ShiroConfig {
         //管理员，需要角色权限 “admin”
         filterChainDefinitionMap.put("/admin/**", "roles[admin]");
         //开放登陆接口
-        filterChainDefinitionMap.put("/login", "anon");
+        filterChainDefinitionMap.put("/api/web/shiro/login", "anon");
+
+        //配置static文件下资源能被访问的
+        filterChainDefinitionMap.put("/css/**", "anon");
+        filterChainDefinitionMap.put("/js/**", "anon");
+
+        // 登录成功后要跳转的链接
+        shiroFilterFactoryBean.setSuccessUrl("index.html");
+        // 未授权界面，不生效(详情原因看MyExceptionResolver)
+        shiroFilterFactoryBean.setUnauthorizedUrl("403_error.html");
+
         //其余接口一律拦截
         //主要这行代码必须放在所有权限设置的最后，不然会导致所有 url 都被拦截
         filterChainDefinitionMap.put("/**", "authc");
 
         shiroFilterFactoryBean.setFilterChainDefinitionMap(filterChainDefinitionMap);
-        System.out.println("Shiro拦截器工厂类注入成功");
+        LOG.info("Shiro拦截器工厂类注入成功");
         return shiroFilterFactoryBean;
     }
 
@@ -49,6 +69,10 @@ public class ShiroConfig {
         DefaultWebSecurityManager securityManager = new DefaultWebSecurityManager();
         // 设置realm.
         securityManager.setRealm(customRealm());
+        //注入缓存管理器，这个如果执行多次，也是同样的一个对象;
+        securityManager.setCacheManager(ehCacheManager());
+        //注入记住我管理器;
+        securityManager.setRememberMeManager(rememberMeManager());
         return securityManager;
     }
 
@@ -61,5 +85,64 @@ public class ShiroConfig {
     @Bean
     public ShiroCustomRealm customRealm() {
         return new ShiroCustomRealm();
+    }
+
+    /**
+     * 开启shiro aop注解支持. 使用代理方式; 所以需要开启代码支持;
+     *
+     * @param securityManager
+     * @return
+     */
+    @Bean
+    public AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor(SecurityManager securityManager) {
+        AuthorizationAttributeSourceAdvisor authorizationAttributeSourceAdvisor = new AuthorizationAttributeSourceAdvisor();
+        authorizationAttributeSourceAdvisor.setSecurityManager(securityManager);
+        return authorizationAttributeSourceAdvisor;
+    }
+
+    /**
+     * shiro缓存管理器;
+     * 需要注入对应的其它的实体类中：
+     * 1、安全管理器：securityManager
+     * 可见securityManager是整个shiro的核心；
+     *
+     * @return
+     */
+    @Bean
+    public EhCacheManager ehCacheManager() {
+        EhCacheManager cacheManager = new EhCacheManager();
+        cacheManager.setCacheManagerConfigFile("classpath:ehcache.xml");
+        return cacheManager;
+    }
+
+    /**
+     * cookie管理对象;
+     *
+     * @return
+     */
+    @Bean
+    public CookieRememberMeManager rememberMeManager() {
+        CookieRememberMeManager cookieRememberMeManager = new CookieRememberMeManager();
+        cookieRememberMeManager.setCookie(rememberMeCookie());
+        return cookieRememberMeManager;
+    }
+
+    /**
+     * cookie对象;
+     *
+     * @return
+     */
+    @Bean
+    public SimpleCookie rememberMeCookie() {
+        //这个参数是cookie的名称，对应前端的checkbox的name = rememberMe
+        SimpleCookie simpleCookie = new SimpleCookie("rememberMe");
+        //<!-- 记住我cookie生效时间30天 ,单位秒;-->
+        simpleCookie.setMaxAge(259200);
+        return simpleCookie;
+    }
+
+    @Bean(name = "shiroDialect")
+    public ShiroDialect shiroDialect() {
+        return new ShiroDialect();
     }
 }
