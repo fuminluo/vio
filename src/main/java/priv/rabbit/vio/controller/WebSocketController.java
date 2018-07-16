@@ -28,13 +28,13 @@ public class WebSocketController {
     @Autowired
     private SocketSessionRegistry socketSessionRegistry;
 
-    @GetMapping(value = "/webSocket")
+    @GetMapping(value = "/api/web/socket/v1/webSocket.html")
     public String index() {
         return "/webSocket";
     }
 
 
-    @MessageMapping("welcome")//@MessageMapping和@RequestMapping功能类似，用于设置URL映射地址，浏览器向服务器发起请求，需要通过该地址。
+    @MessageMapping("/welcome")//@MessageMapping和@RequestMapping功能类似，用于设置URL映射地址，浏览器向服务器发起请求，需要通过该地址。
     @SendTo("/topic/getResponse")//如果服务器接受到了消息，就会对订阅了@SendTo括号中的地址传送消息。
     public Object sendToTop(WiselyMessage wiselyMessage) {
 
@@ -49,7 +49,7 @@ public class WebSocketController {
      *
      * @param sendToUseReq
      */
-    @MessageMapping("sendToUser")
+    @MessageMapping("/sendToUser")
     public void sendToUser(SendToUserReq sendToUseReq) {
         webSocketService.sendToUser(sendToUseReq.getToUserId(), sendToUseReq.getContent());
     }
@@ -59,7 +59,7 @@ public class WebSocketController {
      *
      * @param sendToUserListReq
      */
-    @MessageMapping("SendToUserList")
+    @MessageMapping("/SendToUserList")
     public void SendToUserList(SendToUserListReq sendToUserListReq) {
 
         webSocketService.sendToUsers(sendToUserListReq.getToUserIds(), sendToUserListReq.getContent());

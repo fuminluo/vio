@@ -8,22 +8,22 @@ import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.common.ResultInfo;
 
 @Controller
-@RequestMapping("api/web/shiro/")
+@RequestMapping("")
 public class ShiroController {
 
-    @RequestMapping(value = "login.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/web/shiro/login.html", method = RequestMethod.GET)
     public String notLogin() {
         //new ResultInfo(ResultInfo.SUCCESS, "您尚未登陆！");
         return "login";
     }
 
-    @RequestMapping(value = "notRole", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/web/shiro/notRole", method = RequestMethod.GET)
     @ResponseBody
     public ResultInfo notRole() {
         return new ResultInfo(ResultInfo.SUCCESS, "您没有权限！");
     }
 
-    @RequestMapping(value = "logout", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/web/shiro/logout", method = RequestMethod.GET)
     @ResponseBody
     public ResultInfo logout() {
         Subject subject = SecurityUtils.getSubject();
@@ -32,13 +32,13 @@ public class ShiroController {
         return new ResultInfo(ResultInfo.SUCCESS, "成功注销！");
     }
 
-    @GetMapping(value = "user/getMessage")
+    @GetMapping(value = "/api/web/shiro/user/getMessage")
     @ResponseBody
     public ResultInfo getMessage() {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "您拥有用户权限，可以获得该接口的信息！");
     }
 
-    @GetMapping(value = "admin/getMessage")
+    @GetMapping(value = "/api/web/shiro/admin/getMessage")
     @ResponseBody
     public ResultInfo getAdminMessage() {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "您拥有用户权限，可以获得该接口的信息！");
@@ -51,7 +51,7 @@ public class ShiroController {
      * @param password 密码
      * @return
      */
-    @PostMapping("login")
+    @PostMapping("/api/web/shiro/login")
     public String login(@RequestParam String username, @RequestParam String password) {
 
         // 从SecurityUtils里边创建一个 subject

@@ -13,7 +13,6 @@ import javax.validation.Valid;
 import java.util.concurrent.TimeUnit;
 
 @RestController
-@RequestMapping("api/app/user/")
 public class UserController {
 
     @Autowired
@@ -24,7 +23,7 @@ public class UserController {
 
 
     @ApiOperation(value = "获取用户列表", notes = "")
-    @GetMapping("v1/find/list")
+    @GetMapping("/api/app/user/v1/find/list")
     public Object findUserList() {
         stringRedisTemplate.opsForValue().set("sprinboot-redis-messaage", "message", 10, TimeUnit.SECONDS);
         System.out.println("》》》8080");
@@ -33,12 +32,12 @@ public class UserController {
 
 
     @ApiOperation(value = "注册", notes = "")
-    @GetMapping("v1/create")
+    @GetMapping("/api/app/user/v1/create")
     public Object save() {
         return userService.save();
     }
 
-    @PostMapping("v1/register")
+    @PostMapping("/api/app/user/v1/register")
     public Object register(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
@@ -53,7 +52,7 @@ public class UserController {
      * @param bindingResult
      * @return
      */
-    @PostMapping("v1//login")
+    @PostMapping("/api/app/user/v1/login")
     public Object login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
