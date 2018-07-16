@@ -3,10 +3,10 @@ package priv.rabbit.vio.service;
 import java.util.List;
 
 public interface WebSocketService {
-    public void sendToTopic(String msg);
+     void sendToTopic(String msg);
 
-    public void sendToUser(String userId, Object msg);
+     void sendToUser(String to, String msg);
 
-    public void sendToUsers(List<String> users, Object msg);
+     void sendToUsers(List<String> users, Object msg);
 
 }

@@ -3,13 +3,21 @@ package priv.rabbit.vio.controller;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.subject.Subject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.common.ResultInfo;
+import priv.rabbit.vio.entity.User;
+import priv.rabbit.vio.mapper.UserMapper;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Controller
-@RequestMapping("")
 public class ShiroController {
+
+    @Autowired
+    private UserMapper userMapper;
 
     @RequestMapping(value = "/api/web/shiro/login.html", method = RequestMethod.GET)
     public String notLogin() {
@@ -52,7 +60,7 @@ public class ShiroController {
      * @return
      */
     @PostMapping("/api/web/shiro/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
+    public String login(@RequestParam String username, @RequestParam String password, Model  model) {
 
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
@@ -67,6 +75,12 @@ public class ShiroController {
         //根据权限，指定返回数据
         //return new ResultInfo(ResultInfo.SUCCESS, "登陆成功！");
 
+        User user = new User();
+        user.setUsername(username);
+        user = userMapper.findOneByParam(user);
+
+        model.addAttribute("user_no",user.getUserNo());
+        model.addAttribute("user",user);
         return "index";
     }
 

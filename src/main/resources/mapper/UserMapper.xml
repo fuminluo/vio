@@ -2,197 +2,233 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="priv.rabbit.vio.mapper.UserMapper">
     <resultMap id="BaseResultMap" type="priv.rabbit.vio.entity.User">
-        <id column="user_id" jdbcType="VARCHAR" property="userId"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
-        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
-        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
-        <result column="password" jdbcType="VARCHAR" property="password"/>
-        <result column="phone" jdbcType="VARCHAR" property="phone"/>
-        <result column="role_id" jdbcType="BIGINT" property="roleId"/>
-        <result column="state" jdbcType="TINYINT" property="state"/>
+        <id column="id" jdbcType="BIGINT" property="id"/>
+        <result column="user_no" jdbcType="VARCHAR" property="userNo"/>
         <result column="token" jdbcType="VARCHAR" property="token"/>
-        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="role_id" jdbcType="INTEGER" property="roleId"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
+        <result column="password" jdbcType="VARCHAR" property="password"/>
+        <result column="nickname" jdbcType="VARCHAR" property="nickname"/>
+        <result column="sex" jdbcType="INTEGER" property="sex"/>
+        <result column="photo" jdbcType="VARCHAR" property="photo"/>
+        <result column="phone" jdbcType="VARCHAR" property="phone"/>
+        <result column="parent_id" jdbcType="VARCHAR" property="parentId"/>
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <result column="update_time" jdbcType="TIMESTAMP" property="updateTime"/>
+        <result column="state" jdbcType="INTEGER" property="state"/>
     </resultMap>
     <sql id="Base_Column_List">
-    user_id, create_time, nickname, parent_id, password, phone, role_id, state, token, 
-    update_time, username
-  </sql>
-    <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+        id, user_no, token, role_id, username, password, nickname, sex, photo, phone, parent_id,
+        create_time, update_time, state
+    </sql>
+    <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"/>
         from user
-        where user_id = #{userId,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
     </select>
-    <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
-    delete from user
-    where user_id = #{userId,jdbcType=VARCHAR}
-  </delete>
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+        delete from user
+        where id = #{id,jdbcType=BIGINT}
+    </delete>
     <insert id="insert" parameterType="priv.rabbit.vio.entity.User">
-    insert into user (user_id, create_time, nickname, 
-      parent_id, password, phone, 
-      role_id, state, token, 
-      update_time, username)
-    values (#{userId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{nickname,jdbcType=VARCHAR}, 
-      #{parentId,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
-      #{roleId,jdbcType=BIGINT}, #{state,jdbcType=TINYINT}, #{token,jdbcType=VARCHAR}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{username,jdbcType=VARCHAR})
-  </insert>
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
+        insert into user (user_no, token, role_id,
+        username, password, nickname,
+        sex, photo, phone,
+        parent_id, create_time, update_time,
+        state)
+        values (#{userNo,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR}, #{roleId,jdbcType=INTEGER},
+        #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR},
+        #{sex,jdbcType=INTEGER}, #{photo,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
+        #{parentId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
+        #{state,jdbcType=INTEGER})
+    </insert>
     <insert id="insertSelective" parameterType="priv.rabbit.vio.entity.User">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+            SELECT LAST_INSERT_ID()
+        </selectKey>
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userId != null">
-                user_id,
-            </if>
-            <if test="createTime != null">
-                create_time,
-            </if>
-            <if test="nickname != null">
-                nickname,
-            </if>
-            <if test="parentId != null">
-                parent_id,
-            </if>
-            <if test="password != null">
-                password,
-            </if>
-            <if test="phone != null">
-                phone,
-            </if>
-            <if test="roleId != null">
-                role_id,
-            </if>
-            <if test="state != null">
-                state,
+            <if test="userNo != null">
+                user_no,
             </if>
             <if test="token != null">
                 token,
             </if>
-            <if test="updateTime != null">
-                update_time,
+            <if test="roleId != null">
+                role_id,
             </if>
             <if test="username != null">
                 username,
             </if>
-        </trim>
-        <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="userId != null">
-                #{userId,jdbcType=VARCHAR},
-            </if>
-            <if test="createTime != null">
-                #{createTime,jdbcType=TIMESTAMP},
+            <if test="password != null">
+                password,
             </if>
             <if test="nickname != null">
-                #{nickname,jdbcType=VARCHAR},
+                nickname,
             </if>
-            <if test="parentId != null">
-                #{parentId,jdbcType=VARCHAR},
+            <if test="sex != null">
+                sex,
             </if>
-            <if test="password != null">
-                #{password,jdbcType=VARCHAR},
+            <if test="photo != null">
+                photo,
             </if>
             <if test="phone != null">
-                #{phone,jdbcType=VARCHAR},
+                phone,
             </if>
-            <if test="roleId != null">
-                #{roleId,jdbcType=BIGINT},
+            <if test="parentId != null">
+                parent_id,
+            </if>
+            <if test="createTime != null">
+                create_time,
+            </if>
+            <if test="updateTime != null">
+                update_time,
             </if>
             <if test="state != null">
-                #{state,jdbcType=TINYINT},
+                state,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userNo != null">
+                #{userNo,jdbcType=VARCHAR},
             </if>
             <if test="token != null">
                 #{token,jdbcType=VARCHAR},
             </if>
-            <if test="updateTime != null">
-                #{updateTime,jdbcType=TIMESTAMP},
+            <if test="roleId != null">
+                #{roleId,jdbcType=INTEGER},
             </if>
             <if test="username != null">
                 #{username,jdbcType=VARCHAR},
+            </if>
+            <if test="password != null">
+                #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="photo != null">
+                #{photo,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                #{state,jdbcType=INTEGER},
             </if>
         </trim>
     </insert>
     <update id="updateByPrimaryKeySelective" parameterType="priv.rabbit.vio.entity.User">
         update user
         <set>
-            <if test="createTime != null">
-                create_time = #{createTime,jdbcType=TIMESTAMP},
-            </if>
-            <if test="nickname != null">
-                nickname = #{nickname,jdbcType=VARCHAR},
-            </if>
-            <if test="parentId != null">
-                parent_id = #{parentId,jdbcType=VARCHAR},
-            </if>
-            <if test="password != null">
-                password = #{password,jdbcType=VARCHAR},
-            </if>
-            <if test="phone != null">
-                phone = #{phone,jdbcType=VARCHAR},
-            </if>
-            <if test="roleId != null">
-                role_id = #{roleId,jdbcType=BIGINT},
-            </if>
-            <if test="state != null">
-                state = #{state,jdbcType=TINYINT},
+            <if test="userNo != null">
+                user_no = #{userNo,jdbcType=VARCHAR},
             </if>
             <if test="token != null">
                 token = #{token,jdbcType=VARCHAR},
             </if>
-            <if test="updateTime != null">
-                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            <if test="roleId != null">
+                role_id = #{roleId,jdbcType=INTEGER},
             </if>
             <if test="username != null">
                 username = #{username,jdbcType=VARCHAR},
             </if>
+            <if test="password != null">
+                password = #{password,jdbcType=VARCHAR},
+            </if>
+            <if test="nickname != null">
+                nickname = #{nickname,jdbcType=VARCHAR},
+            </if>
+            <if test="sex != null">
+                sex = #{sex,jdbcType=INTEGER},
+            </if>
+            <if test="photo != null">
+                photo = #{photo,jdbcType=VARCHAR},
+            </if>
+            <if test="phone != null">
+                phone = #{phone,jdbcType=VARCHAR},
+            </if>
+            <if test="parentId != null">
+                parent_id = #{parentId,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateTime != null">
+                update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="state != null">
+                state = #{state,jdbcType=INTEGER},
+            </if>
         </set>
-        where user_id = #{userId,jdbcType=VARCHAR}
+        where id = #{id,jdbcType=BIGINT}
     </update>
     <update id="updateByPrimaryKey" parameterType="priv.rabbit.vio.entity.User">
-    update user
-    set create_time = #{createTime,jdbcType=TIMESTAMP},
-      nickname = #{nickname,jdbcType=VARCHAR},
-      parent_id = #{parentId,jdbcType=VARCHAR},
-      password = #{password,jdbcType=VARCHAR},
-      phone = #{phone,jdbcType=VARCHAR},
-      role_id = #{roleId,jdbcType=BIGINT},
-      state = #{state,jdbcType=TINYINT},
-      token = #{token,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP},
-      username = #{username,jdbcType=VARCHAR}
-    where user_id = #{userId,jdbcType=VARCHAR}
-  </update>
+        update user
+        set user_no = #{userNo,jdbcType=VARCHAR},
+        token = #{token,jdbcType=VARCHAR},
+        role_id = #{roleId,jdbcType=INTEGER},
+        username = #{username,jdbcType=VARCHAR},
+        password = #{password,jdbcType=VARCHAR},
+        nickname = #{nickname,jdbcType=VARCHAR},
+        sex = #{sex,jdbcType=INTEGER},
+        photo = #{photo,jdbcType=VARCHAR},
+        phone = #{phone,jdbcType=VARCHAR},
+        parent_id = #{parentId,jdbcType=VARCHAR},
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+        state = #{state,jdbcType=INTEGER}
+        where id = #{id,jdbcType=BIGINT}
+    </update>
+
 
     <select id="findOneByParam" parameterType="priv.rabbit.vio.entity.User" resultMap="BaseResultMap">
         SELECT * FROM user WHERE 1=1
-        <if test="createTime != null">
-          AND create_time = #{createTime,jdbcType=TIMESTAMP}
-        </if>
-        <if test="nickname != null">
-          AND nickname = #{nickname,jdbcType=VARCHAR}
-        </if>
-        <if test="parentId != null">
-          AND parent_id = #{parentId,jdbcType=VARCHAR}
-        </if>
-        <if test="password != null">
-          AND password = #{password,jdbcType=VARCHAR}
-        </if>
-        <if test="phone != null">
-          AND phone = #{phone,jdbcType=VARCHAR}
-        </if>
         <if test="roleId != null">
-          AND role_id = #{roleId,jdbcType=BIGINT}
-        </if>
-        <if test="state != null">
-          AND state = #{state,jdbcType=TINYINT}
-        </if>
-        <if test="token != null">
-          AND token = #{token,jdbcType=VARCHAR}
-        </if>
-        <if test="updateTime != null">
-          AND update_time = #{updateTime,jdbcType=TIMESTAMP},
+            AND role_id = #{roleId,jdbcType=INTEGER}
         </if>
         <if test="username != null">
-          AND username = #{username,jdbcType=VARCHAR}
+            AND username = #{username,jdbcType=VARCHAR}
+        </if>
+        <if test="nickname != null">
+            AND nickname = #{nickname,jdbcType=VARCHAR}
+        </if>
+        <if test="password != null">
+            AND password = #{password,jdbcType=VARCHAR}
+        </if>
+        <if test="token != null">
+            AND token = #{token,jdbcType=VARCHAR}
+        </if>
+        <if test="phone != null">
+            AND phone = #{phone,jdbcType=VARCHAR}
+        </if>
+        <if test="parentId != null">
+            AND parent_id = #{parentId,jdbcType=VARCHAR}
+        </if>
+        <if test="createTime != null">
+            AND create_time = #{createTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="updateTime != null">
+            AND update_time = #{updateTime,jdbcType=TIMESTAMP}
+        </if>
+        <if test="state != null">
+            AND state = #{state,jdbcType=BIT}
         </if>
     </select>
 

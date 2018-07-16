@@ -19,6 +19,11 @@ public class Constant {
     public static final String P2P_PUSH_PATH = "/msg";
 
 
+    /**
+     * websocket 在线key
+     */
+    public static final String WEB_SOCKET_USER_NO = "websocket:online:userNo:";
+
 
     /**
      * JWT密码

@@ -9,52 +9,82 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = -4582990628611921616L;
 
-    private String userId;
+    private Long id;
 
-    private Long roleId;
+    private String userNo;
+
+    private String token;
+
+    private Integer roleId;
 
     private String username;
 
     private String password;
 
-    private String parentId;
+    private String nickname;
+
+    private Integer sex;
+
+    private String photo;
 
     private String phone;
 
-    private String nickname;
-
-    private String token;
+    private String parentId;
 
     private Date createTime;
 
     private Date updateTime;
 
-    private byte state;
+    private Integer state;
 
-
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
 
     public User() {
     }
 
-    public User(Long roleId, String username, String password) {
+    public User(String userNo, String username, String password) {
+        this.userNo = userNo;
+        this.username = username;
+        this.password = password;
+    }
+
+    public User(Integer roleId, String username, String password) {
         this.roleId = roleId;
         this.username = username;
         this.password = password;
     }
 
-    public String getUserId() {
-        return userId;
+    public Long getId() {
+        return id;
     }
 
-    public void setUserId(String userId) {
-        this.userId = userId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    public Long getRoleId() {
+    public String getUserNo() {
+        return userNo;
+    }
+
+    public void setUserNo(String userNo) {
+        this.userNo = userNo;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
+    public Integer getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long roleId) {
+    public void setRoleId(Integer roleId) {
         this.roleId = roleId;
     }
 
@@ -74,12 +104,28 @@ public class User implements Serializable {
         this.password = password;
     }
 
-    public String getParentId() {
-        return parentId;
+    public String getNickname() {
+        return nickname;
     }
 
-    public void setParentId(String parentId) {
-        this.parentId = parentId;
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
+    }
+
+    public Integer getSex() {
+        return sex;
+    }
+
+    public void setSex(Integer sex) {
+        this.sex = sex;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getPhone() {
@@ -90,28 +136,12 @@ public class User implements Serializable {
         this.phone = phone;
     }
 
-    public String getNickname() {
-        return nickname;
+    public String getParentId() {
+        return parentId;
     }
 
-    public void setNickname(String nickname) {
-        this.nickname = nickname;
-    }
-
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public byte getState() {
-        return state;
-    }
-
-    public void setState(byte state) {
-        this.state = state;
+    public void setParentId(String parentId) {
+        this.parentId = parentId;
     }
 
     public Date getCreateTime() {
@@ -128,5 +158,13 @@ public class User implements Serializable {
 
     public void setUpdateTime(Date updateTime) {
         this.updateTime = updateTime;
+    }
+
+    public Integer getState() {
+        return state;
+    }
+
+    public void setState(Integer state) {
+        this.state = state;
     }
 }

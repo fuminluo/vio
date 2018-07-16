@@ -12,13 +12,14 @@ import priv.rabbit.vio.common.ResultInfo;
 @RestControllerAdvice
 public class DefaultExceptionHandler {
 
-private static Logger LOG = LoggerFactory.getLogger(DefaultExceptionHandler.class);
+    private static Logger LOG = LoggerFactory.getLogger(DefaultExceptionHandler.class);
 
     // 捕捉 ShiroCustomRealm 抛出的异常
     @ExceptionHandler(value = Exception.class)
     @ResponseBody
     public ResultInfo handleException(Exception ex) {
-        LOG.error("》》》 handleException ：："+ex.getMessage() );
+        ex.printStackTrace();
+        LOG.error("》》》 handleException ：：" + ex.getMessage());
         return new ResultInfo(ResultInfo.FAILURE, ex.getMessage());
     }
 
@@ -26,6 +27,7 @@ private static Logger LOG = LoggerFactory.getLogger(DefaultExceptionHandler.clas
     @ExceptionHandler(value = AccountException.class)
     @ResponseBody
     public ResultInfo handleShiroException(AccountException ex) {
+        ex.printStackTrace();
         return new ResultInfo(ResultInfo.FAILURE, ex.getMessage());
     }
 

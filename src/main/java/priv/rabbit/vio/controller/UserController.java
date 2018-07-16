@@ -7,6 +7,8 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.dto.user.LoginRequest;
+import priv.rabbit.vio.entity.User;
+import priv.rabbit.vio.mapper.UserMapper;
 import priv.rabbit.vio.service.UserService;
 
 import javax.validation.Valid;
@@ -20,6 +22,9 @@ public class UserController {
 
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
+
+    @Autowired
+    private UserMapper userMapper;
 
 
     @ApiOperation(value = "获取用户列表", notes = "")
@@ -53,13 +58,18 @@ public class UserController {
      * @return
      */
     @PostMapping("/api/app/user/v1/login")
-    public Object login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
+    public ResultInfo login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
+            return new ResultInfo(ResultInfo.FAILURE, bindingResult.getFieldError().getDefaultMessage());
         }
-        return userService.login(request);
+        User user = new User();
+        user.setUsername(request.getUsername());
+        User findUser = userMapper.findOneByParam(user);
+        if (findUser == null) {
+            return new ResultInfo(ResultInfo.FAILURE,"用户名或密码错误");
+        }
+        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, userService.login(findUser));
     }
-
 
 
 }

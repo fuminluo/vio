@@ -20,5 +20,7 @@ public interface UserMapper {
 
     User findOneByParam(User user);
 
+
+
     String getPassword(String username);
 }

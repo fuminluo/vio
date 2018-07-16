@@ -27,9 +27,16 @@ public class WebSocketServiceImpl implements WebSocketService {
         });
     }
 
+    /**
+     * @描述 发送点对点消息
+     * @参数 [to 目标用户, msg 消息内容]
+     * @返回值 void
+     * @创建人 LuoFuMIn
+     * @创建时间 2018/7/16
+     */
     @Override
-    public void sendToUser(String userId, Object msg) {
-        template.convertAndSendToUser(userId,P2P_PUSH_PATH,msg);
+    public void sendToUser(String to, String msg) {
+        template.convertAndSendToUser(to, P2P_PUSH_PATH, msg);
     }
 
 

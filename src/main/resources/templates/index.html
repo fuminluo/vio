@@ -8,24 +8,32 @@
     <title>SpringBoot Shiro测试</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
-    <script>if(window.top !== window.self){ window.top.location = window.location;}</script>
+    <script>if (window.top !== window.self) {
+        window.top.location = window.location;
+    }</script>
 </head>
 <body>
 <blockquote class="layui-elem-quote">主页</blockquote>
 
 <div id="main-content" class="container">
     <div class="row">
-   <!--  <shiro:guest>
-            <a>登录</a> <a>注册</a>
-        </shiro:guest>
-        <shiro:user>
-            欢迎<shiro:principal property="name"/>
-        </shiro:user>
-        <shiro:>
-            欢迎<shiro:principal property="name"/>
-        </shiro:>-->
+        <!--  <shiro:guest>
+                 <a>登录</a> <a>注册</a>
+             </shiro:guest>
+             <shiro:user>
+                 欢迎<shiro:principal property="name"/>
+             </shiro:user>
+             <shiro:>
+                 欢迎<shiro:principal property="name"/>
+             </shiro:>-->
+
+        <!--   <tr th:each="message : ${messages}">
+               <td th:text="${message.id}">1</td>
+               <td><a href="#" th:text="${message.title}">Title ...</a></td>
+               <td th:text="${message.text}">Text ...</td>
+           </tr>-->
         <p shiro:user="">
-            Welcome back John! Not John? Click <a href="login.html">here</a> to login.
+            Welcome back John! Not John? Click <a href="login.html">here</a> to login. <br>
         </p>
         <br>
         <p shiro:notAuthenticated="">
@@ -33,11 +41,30 @@
         </p>
         <p shiro:guest=""><span style="white-space:pre;">guest </span></a> </p>
         <br>
-        <p shiro:user><span style="white-space:pre;">用户：： user</span></a> </p>
+
+    </div>
+    <div>
+        <br shiro:user>
+        <input type="hidden" id="user_data" th:value="${user}" style="white-space:pre;"></input></br>
+        <input type="hidden" id="user_no" th:value="${user.userNo}" style="white-space:pre;"></input></br>
+        <span style="white-space:pre;">用户：：</span>
+        <span th:text="${user.username}" style="white-space:pre;"></span></a>
+        </p>
     </div>
 
     <a href="/api/web/socket/v1/webSocket.html" class="btn-primary">webscoket</a>
 </div>
-
 </body>
+<script th:src="@{/js/jquery-3.3.1.min.js}"></script>
+<script th:src="@{/js/bootstrap.min.js}"></script>
+<script th:src="@{/js/cookie.js}"></script>
+
+<script>
+    $(function () {
+        setCookie("user_data", $('[id="user_data"]').val());
+        setCookie("user_no", $('[id="user_no"]').val());
+    })
+
+</script>
+
 </html>

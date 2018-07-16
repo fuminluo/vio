@@ -11,6 +11,7 @@ import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;
 import priv.rabbit.vio.service.UserService;
+import priv.rabbit.vio.utils.IDUtil;
 
 import java.util.Date;
 import java.util.UUID;
@@ -26,7 +27,7 @@ public class UserServiceImpl implements UserService {
 
 
     public Object save() {
-        User user = new User((long) 1, "账上", "123");
+        User user = new User();
 
         userMapper.insertSelective(user);
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS);
@@ -34,19 +35,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Object login(LoginRequest request) {
-
-        User user = new User();
-        user.setUsername(request.getUsername());
-        user.setPassword(request.getPassword());
-        user = userMapper.findOneByParam(user);
-
-        String token = Jwts.builder().setSubject(user.getUserId()).setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXP_SECENDS * 1000)).signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
+    public User login(User user) {
+        String token = Jwts.builder().setSubject(user.getUserNo()).setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXP_SECENDS * 1000)).signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
+        User u = new User();
+        u.setId(user.getId());
+        u.setToken(token);
+        userMapper.updateByPrimaryKeySelective(u);
         user.setToken(token);
-
-        userMapper.updateByPrimaryKeySelective(user);
-
-        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, user);
+        return user;
     }
 
     @Override
@@ -58,15 +54,8 @@ public class UserServiceImpl implements UserService {
         if (userCheck != null) {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, "用户名已存在");
         }
-        String userId = "";
-        for (int i = 0; i < 10; i++) {
-            userId = UUID.randomUUID().toString().replaceAll("-", "").substring(0, 8);
-            User userCheckUserId = userMapper.selectByPrimaryKey(userId);
-            if (userCheckUserId==null){
-                break;
-            }
-        }
-        user.setUserId(userId);
+        String userNo = IDUtil.createID(1, 7);
+        user.setUserNo(userNo);
         user.setPassword(request.getPassword());
         userMapper.insertSelective(user);
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, user);

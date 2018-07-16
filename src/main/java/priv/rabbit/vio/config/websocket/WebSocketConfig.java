@@ -40,13 +40,10 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
         registry.addEndpoint(STOMP_PATH).setAllowedOrigins("*").withSockJS().setHeartbeatTime(2000);
 
     }
-
-
     @Bean
     public SocketSessionRegistry SocketSessionRegistry() {
         return new SocketSessionRegistry();
     }
-
     @Bean
     public STOMPConnectEventListener STOMPConnectEventListener() {
         return new STOMPConnectEventListener();

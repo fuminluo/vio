@@ -4,9 +4,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationListener;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.web.socket.messaging.SessionConnectEvent;
+import priv.rabbit.vio.common.Constant;
+
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by baiguantao on 2017/8/4.
@@ -19,6 +23,10 @@ public class STOMPConnectEventListener implements ApplicationListener<SessionCon
 
     @Autowired
     SocketSessionRegistry webAgentSessionRegistry;
+
+
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
     @Override
     public void onApplicationEvent(SessionConnectEvent event) {
@@ -35,14 +43,16 @@ public class STOMPConnectEventListener implements ApplicationListener<SessionCon
 
         LOG.info("=====getAck======" + sha.getAck());*/
 
-        String userId = sha.getLogin();
+        String userNo = sha.getLogin();
 
         //String passcode = sha.getPasscode();
 
         //String token = sha.getMessage();
 
-        LOG.info("@新webSocket连接建立 用户信息 userId=" + userId+"，sessionId=" + sessionId);
+        LOG.info("@新webSocket连接建立 用户信息 userId=" + userNo + "，sessionId=" + sessionId);
 
-        webAgentSessionRegistry.registerSessionId(userId, sessionId);
+        redisTemplate.opsForValue().set(Constant.WEB_SOCKET_USER_NO + userNo, userNo, 30, TimeUnit.SECONDS);
+
+        webAgentSessionRegistry.registerSessionId(userNo, sessionId);
     }
 }
