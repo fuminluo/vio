@@ -2,6 +2,8 @@ package priv.rabbit.vio.controller;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authz.annotation.RequiresPermissions;
+import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,12 +44,14 @@ public class ShiroController {
 
     @GetMapping(value = "/api/web/shiro/user/getMessage")
     @ResponseBody
+    @RequiresPermissions("getMessage")
     public ResultInfo getMessage() {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "您拥有用户权限，可以获得该接口的信息！");
     }
 
     @GetMapping(value = "/api/web/shiro/admin/getMessage")
     @ResponseBody
+    @RequiresRoles({"admin", "user"})
     public ResultInfo getAdminMessage() {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "您拥有用户权限，可以获得该接口的信息！");
     }
