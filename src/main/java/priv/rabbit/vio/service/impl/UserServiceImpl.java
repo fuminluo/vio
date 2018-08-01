@@ -26,7 +26,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
 
-    public Object save() {
+    public ResultInfo save() {
         User user = new User();
 
         userMapper.insertSelective(user);
@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional
-    public Object register(LoginRequest request) {
+    public ResultInfo register(LoginRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());
         User userCheck = userMapper.findOneByParam(user);

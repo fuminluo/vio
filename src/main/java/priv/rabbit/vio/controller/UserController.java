@@ -29,7 +29,7 @@ public class UserController {
 
     @ApiOperation(value = "获取用户列表", notes = "")
     @GetMapping("/api/app/user/v1/find/list")
-    public Object findUserList() {
+    public ResultInfo findUserList() {
         stringRedisTemplate.opsForValue().set("sprinboot-redis-messaage", "message", 10, TimeUnit.SECONDS);
         System.out.println("》》》8080");
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "123456");
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     @PostMapping("/api/app/user/v1/register")
-    public Object register(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
+    public ResultInfo register(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
         }
