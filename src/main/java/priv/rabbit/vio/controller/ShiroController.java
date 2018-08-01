@@ -63,7 +63,7 @@ public class ShiroController {
      * @param password 密码
      * @return
      */
-    @PostMapping("/api/web/shiro/login")
+    @PostMapping("/api/v1/web/shiro/login")
     public String login(@RequestParam String username, @RequestParam String password, Model  model) {
 
         // 从SecurityUtils里边创建一个 subject

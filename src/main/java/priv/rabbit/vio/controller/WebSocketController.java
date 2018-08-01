@@ -34,7 +34,7 @@ public class WebSocketController {
     private StringRedisTemplate redisTemplate;
 
 
-    @GetMapping(value = "/api/web/socket/v1/webSocket.html")
+    @GetMapping(value = "/api/v1/web/socket/webSocket.html")
     public String index() {
         return "/webSocket";
     }
