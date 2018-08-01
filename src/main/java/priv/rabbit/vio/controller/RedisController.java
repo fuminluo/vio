@@ -1,5 +1,6 @@
 package priv.rabbit.vio.controller;
 
+import io.swagger.annotations.Api;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -13,6 +14,7 @@ import java.util.*;
  * @author LuoFuMin
  * @data 2018/7/17
  */
+@Api(value = "RedisController", description="redis案例")
 @RestController
 public class RedisController {
     @Autowired

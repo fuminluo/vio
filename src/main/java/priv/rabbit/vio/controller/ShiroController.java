@@ -1,5 +1,6 @@
 package priv.rabbit.vio.controller;
 
+import io.swagger.annotations.Api;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
@@ -15,6 +16,7 @@ import priv.rabbit.vio.mapper.UserMapper;
 
 import javax.servlet.http.HttpServletRequest;
 
+@Api(value = "ShiroController", description="权限管理")
 @Controller
 public class ShiroController {
 

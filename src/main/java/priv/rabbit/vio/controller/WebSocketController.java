@@ -1,6 +1,7 @@
 package priv.rabbit.vio.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import javax.annotation.Resource;
 import javax.validation.Valid;
 import java.util.concurrent.TimeUnit;
 
+@Api(value = "WebSocketController", description="websocket案例")
 @Controller
 public class WebSocketController {
 

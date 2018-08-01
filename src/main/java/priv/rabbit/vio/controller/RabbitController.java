@@ -1,5 +1,6 @@
 package priv.rabbit.vio.controller;
 
+import io.swagger.annotations.Api;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author LuoFuMin
  * @data 2018/7/26
  */
+@Api(value = "RabbitController", description="rabbitmq案例")
 @RestController
 public class RabbitController {
 
