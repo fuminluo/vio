@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
 
+    @Override
     public ResultInfo save() {
         User user = new User();
 

@@ -55,7 +55,9 @@ public class SocketSessionRegistry{
                 set = new CopyOnWriteArraySet();
                 this.userSessionIds.put(userId, (Set<String>) set);
             }
-            if (!((Set)set).isEmpty())  ((Set)set).clear();
+            if (!((Set)set).isEmpty()) {
+                ((Set) set).clear();
+            }
             ((Set)set).add(sessionId);
         }
     }
