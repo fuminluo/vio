@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-//@Configuration
+@Configuration
 public class ShiroConfig {
 
 
@@ -30,7 +30,7 @@ public class ShiroConfig {
         // 必须设置 SecurityManager
         shiroFilterFactoryBean.setSecurityManager(securityManager);
         // setLoginUrl 如果不设置值，默认会自动寻找Web工程根目录下的"/login.jsp"页面 或 "/login" 映射
-        shiroFilterFactoryBean.setLoginUrl("/api/web/shiro/login.html");
+        shiroFilterFactoryBean.setLoginUrl("/api/v1/web/shiro/login-html");
         // 设置无权限时跳转的 url;
         shiroFilterFactoryBean.setUnauthorizedUrl("/notRole");
         // 设置拦截器
@@ -42,7 +42,14 @@ public class ShiroConfig {
         //管理员，需要角色权限 “admin”
         filterChainDefinitionMap.put("/admin/**", "roles[admin]");
         //开放登陆接口
-        filterChainDefinitionMap.put("/api/web/shiro/login", "anon");
+        filterChainDefinitionMap.put("/api/v1/web/shiro/login", "anon");
+        filterChainDefinitionMap.put("/api/v1/web/shiro/login-check", "anon");
+
+        //开放swagger接口调试
+        filterChainDefinitionMap.put("/v2/api-docs", "anon");
+        filterChainDefinitionMap.put("/webjars/**", "anon");
+        filterChainDefinitionMap.put("/swagger-resources/**", "anon");
+        filterChainDefinitionMap.put("/swagger-ui.html", "anon");
 
         //配置static文件下资源能被访问的
         filterChainDefinitionMap.put("/css/**", "anon");

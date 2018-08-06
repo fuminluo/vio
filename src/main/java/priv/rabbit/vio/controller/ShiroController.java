@@ -16,26 +16,26 @@ import priv.rabbit.vio.mapper.UserMapper;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Api(value = "ShiroController", description="权限管理")
+@Api(value = "ShiroController", description = "权限管理")
 @Controller
 public class ShiroController {
 
     @Autowired
     private UserMapper userMapper;
 
-    @RequestMapping(value = "/api/web/shiro/login.html", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/v1/web/shiro/login-html", method = RequestMethod.GET)
     public String notLogin() {
         //new ResultInfo(ResultInfo.SUCCESS, "您尚未登陆！");
         return "login";
     }
 
-    @RequestMapping(value = "/api/web/shiro/notRole", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/v1/web/shiro/notRole", method = RequestMethod.GET)
     @ResponseBody
     public ResultInfo notRole() {
         return new ResultInfo(ResultInfo.SUCCESS, "您没有权限！");
     }
 
-    @RequestMapping(value = "/api/web/shiro/logout", method = RequestMethod.GET)
+    @RequestMapping(value = "/api/v1/web/shiro/logout", method = RequestMethod.GET)
     @ResponseBody
     public ResultInfo logout() {
         Subject subject = SecurityUtils.getSubject();
@@ -44,14 +44,14 @@ public class ShiroController {
         return new ResultInfo(ResultInfo.SUCCESS, "成功注销！");
     }
 
-    @GetMapping(value = "/api/web/shiro/user/getMessage")
+    @GetMapping(value = "/api/v1/web/shiro/user")
     @ResponseBody
     @RequiresPermissions("getMessage")
     public ResultInfo getMessage() {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "您拥有用户权限，可以获得该接口的信息！");
     }
 
-    @GetMapping(value = "/api/web/shiro/admin/getMessage")
+    @GetMapping(value = "/api/v1/web/shiro/admin")
     @ResponseBody
     @RequiresRoles({"admin", "user"})
     public ResultInfo getAdminMessage() {
@@ -66,8 +66,7 @@ public class ShiroController {
      * @return
      */
     @PostMapping("/api/v1/web/shiro/login")
-    public String login(@RequestParam String username, @RequestParam String password, Model  model) {
-
+    public String login(@RequestParam String username, @RequestParam String password, Model model) {
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
         // 在认证提交前准备 token（令牌）
@@ -85,9 +84,27 @@ public class ShiroController {
         user.setUsername(username);
         user = userMapper.findOneByParam(user);
 
-        model.addAttribute("user_no",user.getUserNo());
-        model.addAttribute("user",user);
+        model.addAttribute("user_no", user.getUserNo());
+        model.addAttribute("user", user);
         return "index";
+    }
+
+    /**
+     * 检查用户名和登录密码
+     *
+     * @param username:用户名, password:密码
+     * @return ResultInfo<?>
+     * @author LuoFuMin
+     * @date 2018/8/6
+     */
+    @PostMapping("/api/v1/web/shiro/login-check")
+    @ResponseBody
+    public ResultInfo<?> login(@RequestParam String username, @RequestParam String password) {
+        String pwd = userMapper.getPassword(username);
+        if (pwd == null || !pwd.equals(password)) {
+            return new ResultInfo(ResultInfo.FAILURE, "用户名或密码错误");
+        }
+        return new ResultInfo(ResultInfo.SUCCESS);
     }
 
 }

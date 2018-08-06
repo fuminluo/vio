@@ -6,7 +6,9 @@
     <title>SpringBoot Shiro测试</title>
     <link th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
     <link th:href="@{/css/style.css}" rel="stylesheet"/>
-    <script>if(window.top !== window.self){ window.top.location = window.location;}</script>
+    <script>if (window.top !== window.self) {
+        window.top.location = window.location;
+    }</script>
 </head>
 
 <body class="gray-bg">
@@ -15,23 +17,27 @@
         <div>
             <h1 class="logo-name" style="height: 170px;"></h1>
         </div>
-        <h2>欢迎使用XX管理平台</h2>
+        <h2>欢迎使用@管理平台</h2>
         <div th:if="${msg}">
             <div id="login-alert1" class="alert alert-danger col-sm-12" th:text="${msg}"></div>
         </div>
         <div th:else>
             <div id="login-alert2" class="alert alert-danger col-sm-12" style="display: none;"></div>
         </div>
-        <form class="m-t" id="login_form" role="form" method="post" th:action="@{/api/web/shiro/login}">
-            <h5 id="login-alert" class="alert alert-danger col-sm-12"></h5>
+        <form class="m-t" id="login_form" role="form" method="post" th:action="@{/api/v1/web/shiro/login}">
             <div class="form-group">
                 <input id="login-username" th:value="${username}" name="username" type="text" autocomplete="off"
-                       class="form-control" placeholder="用户名" oninvalid="this.setCustomValidity('请输入用户名')" oninput="setCustomValidity('')">
+                       class="form-control" placeholder="用户名" oninvalid="this.setCustomValidity('请输入用户名')"
+                       oninput="setCustomValidity('')">
             </div>
             <div class="form-group">
                 <input id="login-password" th:value="${password}" name="password" type="password" autocomplete="off"
-                       class="form-control" placeholder="密码" oninvalid="this.setCustomValidity('请输入密码')" oninput="setCustomValidity('')">
+                       class="form-control" placeholder="密码" oninvalid="this.setCustomValidity('请输入密码')"
+                       oninput="setCustomValidity('')">
             </div>
+
+            <h5 id="login-alert"></h5>
+
             <div class="form-group" style="padding-bottom: 33px;">
                 <div class="col-sm-8" style="padding-left: 0; padding-right: 0;">
                     <input class="form-control" type="text" name="captcha" placeholder="验证码" autocomplete="off"
@@ -53,17 +59,32 @@
 <script th:src="@{/js/bootstrap.min.js}"></script>
 <script>
     $(function () {
-
-        $('#login_form').submit(function() {
+        $('#login_form').submit(function (e) {
+            //e.preventDefault();
             var username = $('[name="username"]').val();
             var password = $('[name="password"]').val();
-            if(username == '') {
+
+            if (username == '') {
+                $("#login-alert").attr("class", "alert alert-danger col-sm-12")
                 $('#login-alert').text('请输入用户名').show();
                 return false;
-            } else if(password == '') {
+            } else if (password == '') {
+                $("#login-alert").attr("class", "alert alert-danger col-sm-12")
                 $('#login-alert').text('请输入密码').show();
                 return false;
             }
+
+            $.ajax({
+                method: "POST",
+                url: "/api/v1/web/shiro/login-check",
+                data: {username: username, password: password}
+            }).done(function (msg) {
+                if (msg.code != 200) {
+                    $("#login-alert").attr("class", "alert alert-danger col-sm-12")
+                    $('#login-alert').text('用户名或密码错误').show();
+                    return false;
+                }
+            });
         });
     });
 
