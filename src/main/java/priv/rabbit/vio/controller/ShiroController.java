@@ -99,8 +99,10 @@ public class ShiroController {
      */
     @PostMapping("/api/v1/web/shiro/login-check")
     @ResponseBody
-    public ResultInfo<?> login(@RequestParam String username, @RequestParam String password) {
+    public ResultInfo<?> loginCheck(@RequestParam String username, @RequestParam String password) {
+        System.out.println("login-check");
         String pwd = userMapper.getPassword(username);
+
         if (pwd == null || !pwd.equals(password)) {
             return new ResultInfo(ResultInfo.FAILURE, "用户名或密码错误");
         }
