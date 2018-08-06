@@ -60,7 +60,7 @@
 <script>
     $(function () {
         $('#login_form').submit(function (e) {
-            //e.preventDefault();
+            e.preventDefault();
             var username = $('[name="username"]').val();
             var password = $('[name="password"]').val();
 

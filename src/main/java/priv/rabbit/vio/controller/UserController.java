@@ -15,7 +15,8 @@ import priv.rabbit.vio.service.UserService;
 import javax.validation.Valid;
 import java.util.concurrent.TimeUnit;
 
-@Api(value = "UserController", description="用户管理")
+
+@Api(value = "UserController", description = "用户管理")
 @RestController
 public class UserController {
 
@@ -30,7 +31,7 @@ public class UserController {
 
 
     @ApiOperation(value = "获取用户列表", notes = "获取用户列表")
-    @GetMapping("/api/v1/app/user/find/list")
+    @GetMapping("/v1/app/users")
     public ResultInfo findUserList() {
         stringRedisTemplate.opsForValue().set("sprinboot-redis-messaage", "message", 10, TimeUnit.SECONDS);
         System.out.println("》》》8080");
@@ -39,12 +40,12 @@ public class UserController {
 
 
     @ApiOperation(value = "注册", notes = "注册")
-    @GetMapping("/api/v1/app/user/create")
+    @PostMapping("/v1/app/user/create")
     public ResultInfo save() {
         return userService.save();
     }
 
-    @PostMapping("/api/v1/app/user/register")
+    @PostMapping("/v1/app/user/register")
     public ResultInfo register(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
@@ -60,7 +61,7 @@ public class UserController {
      * @return
      */
     @ApiOperation(value = "登录", notes = "登录")
-    @PostMapping("/api/v1/app/user/login")
+    @PostMapping("/v1/app/user/login")
     public ResultInfo login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResultInfo(ResultInfo.FAILURE, bindingResult.getFieldError().getDefaultMessage());
@@ -69,22 +70,10 @@ public class UserController {
         user.setUsername(request.getUsername());
         User findUser = userMapper.findOneByParam(user);
         if (findUser == null) {
-            return new ResultInfo(ResultInfo.FAILURE,"用户名或密码错误");
+            return new ResultInfo(ResultInfo.FAILURE, "用户名或密码错误");
         }
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, userService.login(findUser));
     }
 
-    /**
-     * 用户列表
-     */
-    @ApiOperation(value = "用户列表", notes = "获取用户列表")
-    @GetMapping(value = "/api/v1/app/user/list")
-    public ResultInfo<?> findAllUser(@Valid @ModelAttribute LoginRequest request, BindingResult bindingResult)
-            throws Exception {
-        if (bindingResult.hasErrors()) {
-            return new ResultInfo(ResultInfo.FAILURE, bindingResult.getFieldError().getDefaultMessage());
-        }
-        return null;
-    }
 
 }
