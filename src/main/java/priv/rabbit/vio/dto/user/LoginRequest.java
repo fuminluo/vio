@@ -1,8 +1,8 @@
 package priv.rabbit.vio.dto.user;
 
 import org.hibernate.validator.constraints.Length;
-import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 public class LoginRequest {

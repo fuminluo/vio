@@ -17,9 +17,6 @@ import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfigura
 @MapperScan(basePackages = "priv.**.mapper")
 public class VioApplication {
 
-
-
-
     public static void main(String[] args) {
         SpringApplication.run(VioApplication.class, args);
     }

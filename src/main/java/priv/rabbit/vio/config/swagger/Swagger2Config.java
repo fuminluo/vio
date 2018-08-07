@@ -1,4 +1,4 @@
-package priv.rabbit.vio.config.Swagger;
+package priv.rabbit.vio.config.swagger;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
