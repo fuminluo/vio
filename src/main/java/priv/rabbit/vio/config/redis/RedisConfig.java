@@ -6,6 +6,7 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
+import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -16,10 +17,10 @@ public class RedisConfig {
         return new CountDownLatch(1);
     }
 
-    /*
-  * Redis消息监听器容器
-  * 这个容器加载了RedisConnectionFactory和消息监听器
-  */
+    /**
+    * Redis消息监听器容器
+    * 这个容器加载了RedisConnectionFactory和消息监听器
+     */
     @Bean
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
                                             MessageListenerAdapter listenerAdapter) {
@@ -29,7 +30,7 @@ public class RedisConfig {
         return container;
     }
 
-    /*
+    /**
      * RedisKeyExpiredListener实例
      */
     @Bean

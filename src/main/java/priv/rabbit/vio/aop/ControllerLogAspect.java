@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import netscape.javascript.JSException;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
@@ -61,7 +62,7 @@ public class ControllerLogAspect {
                         LOGGER.info("key::" + entry.getKey() + ">> value::" + entry.getValue());
                         argList.add(entry.getValue().toString());
                     }
-                } catch (JSONException e) {
+                } catch (Exception e) {
                     try {
                         //请求数据 解析是为 JSONArray，如果解析不成功 catch 进行下一步处理
                         String requestDate = JSONObject.toJSONString(args[i]);
@@ -69,7 +70,7 @@ public class ControllerLogAspect {
                         for (int j = 0; j < requestJSONArray.size(); ++j) {
                             argList.add(requestJSONArray.get(i).toString());
                         }
-                    } catch (JSONException e1) {
+                    } catch (Exception e1) {
                         //请求数据 解析是为 String （form-data数据为字符串的形式），未知数据也转成String
                         argList.add(args[i].toString());
                     }
