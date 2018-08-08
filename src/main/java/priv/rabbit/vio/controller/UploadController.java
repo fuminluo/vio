@@ -26,7 +26,7 @@ public class UploadController {
     @ApiOperation(value = "上传文件view", notes = "上传文件view")
     @GetMapping("/v1/web/upload-html")
     public ModelAndView uploadView() {
-        return new ModelAndView("/upload");
+        return new ModelAndView("upload");
     }
 
     @ApiOperation(value = "上传文件", notes = "上传文件")

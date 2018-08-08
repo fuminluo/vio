@@ -38,7 +38,7 @@ public class WebSocketController {
 
     @GetMapping(value = "/v1/app/web-socket/init-html")
     public String index() {
-        return "/web-socket";
+        return "web-socket";
     }
 
 
@@ -87,7 +87,5 @@ public class WebSocketController {
     public void heartbeat(@Valid @RequestBody WSHeartbeat heartbeat) throws Exception {
         LOG.info("》》》 heartbeat==" + heartbeat.getFrom()+"，时间戳"+heartbeat.getTimestamp());
         redisTemplate.opsForValue().set(Constant.WEB_SOCKET_USER_NO +  heartbeat.getFrom(),  heartbeat.getFrom(), 30, TimeUnit.SECONDS);
-
-
     }
 }

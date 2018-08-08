@@ -36,6 +36,7 @@ public class ControllerLogAspect {
 
     @Before("executeService()")
     public void doBeforeAdvice(JoinPoint joinPoint) {
+        try {
         Signature signature = joinPoint.getSignature();
         HttpServletRequest request = (HttpServletRequest) RequestContextHolder.getRequestAttributes().resolveReference("request");
         long beginTime = System.currentTimeMillis();
@@ -82,8 +83,7 @@ public class ControllerLogAspect {
         loggerInfo.setUrl(request.getRequestURI());
         loggerInfo.setSessionId(request.getSession().getId());
         LOGGER.info("[CLS] - " + signature.getDeclaringTypeName() + "." + signature.getName());
-        try {
-            LOGGER.info("[IN] - " + JsonFormatUtils.formatJson(JSON.toJSONString(loggerInfo)));
+        LOGGER.info("[IN] - " + JsonFormatUtils.formatJson(JSON.toJSONString(loggerInfo)));
         } catch (Exception e) {
 
         }
@@ -94,6 +94,7 @@ public class ControllerLogAspect {
             returning = "keys"
     )
     public void doAfterReturningAdvice(JoinPoint joinPoint, Object keys) {
+        try {
         HttpServletRequest request = (HttpServletRequest) RequestContextHolder.getRequestAttributes().resolveReference("request");
         long beginTime = Long.parseLong(String.valueOf(request.getAttribute("beginTime")));
         String taskuuid = String.valueOf(request.getAttribute("taskuuid"));
@@ -104,6 +105,9 @@ public class ControllerLogAspect {
         loggerInfo.setTaskuuid(taskuuid);
         loggerInfo.setResult(keys);
         LOGGER.info("[OUT] - " + JsonFormatUtils.formatJson(JSON.toJSONString(loggerInfo)));
+        } catch (Exception e) {
+
+        }
     }
 
     @AfterThrowing(
