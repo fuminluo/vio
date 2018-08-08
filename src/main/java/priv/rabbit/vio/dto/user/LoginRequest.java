@@ -1,11 +1,15 @@
 package priv.rabbit.vio.dto.user;
 
+import com.alibaba.fastjson.JSONArray;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.io.Serializable;
 
-public class LoginRequest {
+public class LoginRequest implements Serializable{
+
+    private static final long serialVersionUID = -2810845001311965385L;
 
     @NotBlank(message = "用户名不能为空")
     @Pattern(message = "用户名必须是4~20位数字字母的组合", regexp = "[A-Za-z0-9]{4,20}")

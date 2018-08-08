@@ -13,6 +13,7 @@ import priv.rabbit.vio.mapper.UserMapper;
 import priv.rabbit.vio.service.UserService;
 
 import javax.validation.Valid;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -41,8 +42,8 @@ public class UserController {
 
     @ApiOperation(value = "注册", notes = "注册")
     @PostMapping("/v1/app/user/create")
-    public ResultInfo save() {
-        return userService.save();
+    public ResultInfo save(@RequestParam String username, @RequestParam String password) {
+        return userService.save(username,password);
     }
 
     @PostMapping("/v1/app/user/register")
@@ -51,6 +52,15 @@ public class UserController {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
         }
         return userService.register(request);
+    }
+
+
+    @PostMapping("/v1/app/user/test")
+    public ResultInfo test(@Valid @RequestBody List<LoginRequest> list, BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
+        }
+        return new ResultInfo(ResultInfo.SUCCESS,ResultInfo.MSG_SUCCESS,list);
     }
 
     /**

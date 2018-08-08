@@ -27,10 +27,8 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResultInfo save() {
-        User user = new User();
+    public ResultInfo save(String username, String password) {
 
-        userMapper.insertSelective(user);
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS);
     }
 

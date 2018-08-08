@@ -33,7 +33,7 @@ public class UploadProgressListener implements ProgressListener {
      */
     @Override
     public void update(long pBytesRead, long pContentLength, int pItems) {
-        LOG.info(">>> 正在上传>>> 字节bytes =="+pBytesRead);
+        //LOG.info(">>> 正在上传>>> 字节bytes =="+pBytesRead);
         ProgressInfo progressInfo = (ProgressInfo) session.getAttribute("progressInfo");
         progressInfo.setpBytesRead(pBytesRead);
         progressInfo.setpContentLength(pContentLength);
