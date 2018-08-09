@@ -1,11 +1,14 @@
 package priv.rabbit.vio.entity;
 
+import java.io.Serializable;
+
 /**
  * @author LuoFuMin
  * @data 2018/8/6
  */
-public class ProgressInfo {
+public class ProgressInfo implements Serializable{
 
+    private static final long serialVersionUID = -1339389212708363496L;
     /**
      * 到目前为止读取文件的比特数
      */

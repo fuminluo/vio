@@ -59,6 +59,8 @@
                 setConnected(true);
                 isConnect = true;
 
+                //60秒发送一次心跳
+                var int = self.setInterval("clock()", 60000);
 
                 //5通过stompClient.subscribe（）订阅服务器的目标是'/user/' + userId + '/msg'接收一对一的推送消息,其中userId由服务端传递过来,用于表示唯一的用户,通过此值将消息精确推送给一个用户
                 stompClient.subscribe('/user/' + userId + '/msg', function (message) {
@@ -128,8 +130,7 @@
         }
     }
 
-    //5秒发送一次心跳
-    var int = self.setInterval("clock()", 5000);
+
 
     //发送心跳
     function clock() {
