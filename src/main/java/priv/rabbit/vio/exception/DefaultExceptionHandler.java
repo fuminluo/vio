@@ -49,8 +49,7 @@ public class DefaultExceptionHandler {
             e.printStackTrace();
             LOG.error(JSON.toJSONString(e.getStackTrace()));
         }
-        ResultInfo<Object> resultInfo = new ResultInfo<Object>(ResultInfo.FAILURE, "您没有权限访问！");
-        return resultInfo;
+        return  new ResultInfo<Object>(ResultInfo.FAILURE, "您没有权限访问！");
     }
 
 }

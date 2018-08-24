@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.common.ResultInfo;
+import priv.rabbit.vio.config.target.CustomAnnotation;
 import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;
@@ -31,6 +32,7 @@ public class UserController {
     private UserMapper userMapper;
 
 
+    @CustomAnnotation
     @ApiOperation(value = "获取用户列表", notes = "获取用户列表")
     @GetMapping("/v1/app/users")
     public ResultInfo findUserList() {
@@ -39,13 +41,14 @@ public class UserController {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "123456");
     }
 
-
-    @ApiOperation(value = "注册", notes = "注册")
+    @CustomAnnotation
+    @ApiOperation(value = "保存", notes = "保存")
     @PostMapping("/v1/app/user/create")
     public ResultInfo save(@RequestParam String username, @RequestParam String password) {
         return userService.save(username,password);
     }
 
+    @ApiOperation(value = "注册", notes = "注册")
     @PostMapping("/v1/app/user/register")
     public ResultInfo register(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {

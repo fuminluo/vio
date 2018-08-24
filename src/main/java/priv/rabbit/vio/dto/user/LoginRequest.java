@@ -2,12 +2,13 @@ package priv.rabbit.vio.dto.user;
 
 import com.alibaba.fastjson.JSONArray;
 import org.hibernate.validator.constraints.Length;
+import priv.rabbit.vio.common.IBaseRequest;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
-public class LoginRequest implements Serializable{
+public class LoginRequest implements IBaseRequest,Serializable{
 
     private static final long serialVersionUID = -2810845001311965385L;
 
