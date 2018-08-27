@@ -38,6 +38,9 @@ public class CustomerAspect {
      */
     private static final Logger LOG = LoggerFactory.getLogger(CustomerAspect.class);
 
+    /**
+     * 切点，CustomAnnotation注解
+     */
     @Pointcut("@annotation(priv.rabbit.vio.config.target.CustomAnnotation)")
     private void executeWork() {
     }
