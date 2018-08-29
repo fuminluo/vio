@@ -1,4 +1,4 @@
-package priv.rabbit.vio.exception;
+package priv.rabbit.vio.config.exception;
 
 import com.alibaba.fastjson.JSON;
 import org.apache.shiro.authc.AccountException;
