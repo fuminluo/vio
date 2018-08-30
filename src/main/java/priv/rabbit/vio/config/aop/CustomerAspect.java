@@ -6,14 +6,17 @@ import org.apache.ibatis.javassist.bytecode.CodeAttribute;
 import org.apache.ibatis.javassist.bytecode.LocalVariableAttribute;
 import org.apache.ibatis.javassist.bytecode.MethodInfo;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.thymeleaf.util.ArrayUtils;
+import priv.rabbit.vio.config.target.BussAnnotation;
 
-
+import java.lang.reflect.Method;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
@@ -22,36 +25,96 @@ import java.io.IOException;
  * 自定义aop 切面
  *
  * @author LuoFuMin
+ * @Before: 前置通知, 在方法执行之前执行，这个通知不能阻止连接点前的执行（除非它抛出一个异常）。
+ * @After: 后置通知, 在方法执行之后执行（不论是正常返回还是异常退出）。
+ * @AfterReturning:返回通知, 在方法正常返回结果之后执行 。
+ * @AfterThrowing: 异常通知, 在方法抛出异常之后。
+ * @Around: 包围一个连接点（join point）的通知，如方法调用。这是最强大的一种通知类型。
+ * 环绕通知可以在方法调用前后完成自定义的行为。它也会选择是否继续执行连接点或直接返回它们自己的返回值或抛出异常来结束执行
  * @data 2018/8/24
  */
 @Aspect
 @Component
 public class CustomerAspect {
 
-    /**
-     * @Before: 前置通知, 在方法执行之前执行，这个通知不能阻止连接点前的执行（除非它抛出一个异常）。
-     * @After: 后置通知, 在方法执行之后执行（不论是正常返回还是异常退出）。
-     * @AfterReturning:返回通知, 在方法正常返回结果之后执行 。
-     * @AfterThrowing: 异常通知, 在方法抛出异常之后。
-     * @Around: 包围一个连接点（join point）的通知，如方法调用。这是最强大的一种通知类型。
-     * 环绕通知可以在方法调用前后完成自定义的行为。它也会选择是否继续执行连接点或直接返回它们自己的返回值或抛出异常来结束执行
-     */
     private static final Logger LOG = LoggerFactory.getLogger(CustomerAspect.class);
 
     /**
-     * 切点，CustomAnnotation注解
+     * 自定义注解切点：CustomAnnotation注解
      */
     @Pointcut("@annotation(priv.rabbit.vio.config.target.CustomAnnotation)")
     private void executeWork() {
     }
 
+    /**
+     * 保存操作日志切点：BussAnnotation
+     */
+    @Pointcut("@annotation(priv.rabbit.vio.config.target.BussAnnotation)")
+    public void saveOption() {
+
+    }
+
+
+    /**
+     * 环绕通知   拦截指定的切点，这里拦截joinPointForAddOne切入点所指定的addOne()方法
+     */
+    @Around(value = "saveOption()&& @annotation(annotation) &&args(object,..)", argNames = "joinPoint,annotation,object")
+    public Object interceptorAddOne(ProceedingJoinPoint joinPoint, BussAnnotation annotation, Object object) throws Throwable {
+        LOG.info("Aop start");
+        LOG.info("moduleName:" + annotation.moduleName());
+        LOG.info("option:" + annotation.option());
+        Object result = null;
+        try {
+            // 记录操作日志...谁..在什么时间..做了什么事情..
+            result = joinPoint.proceed();
+        } catch (Exception e) {
+            // 异常处理记录日志..log.error(e);
+            throw e;
+        }
+        LOG.info("Aop end");
+        return result;
+    }
+
+    /**
+     * Before: 前置通知, 在方法执行之前执行，这个通知不能阻止连接点前的执行（除非它抛出一个异常）
+     *
+     * @param joinPoint
+     * @throws ClassNotFoundException
+     * @throws NotFoundException
+     * @throws IOException
+     */
     @Before("executeWork()")
     public void doBefore(JoinPoint joinPoint) throws ClassNotFoundException, NotFoundException, IOException {
         LOG.info("自定义注解aop切面：before");
         HttpServletRequest request = (HttpServletRequest) RequestContextHolder.getRequestAttributes().resolveReference("request");
+        String url = request.getRequestURL().toString();
+        LOG.info("url ：" + url);
         String token = request.getHeader("Authorization");
-        LOG.info("token ：" + token);
+        Signature signature = joinPoint.getSignature();
+        LOG.info("[CLS] - " + signature.getDeclaringTypeName() + "." + signature.getName());
+        printParam(joinPoint);
+
     }
+
+
+    /**
+     * AfterReturning 返回通知, 在方法正常返回结果之后执行
+     *
+     * @param result
+     */
+    @AfterReturning(value = "executeWork()", returning = "result")
+    public void AfterRunning(Object result) {
+        LOG.info("自定义注解aop切面：AfterReturning = " + JSONObject.toJSONString(result));
+    }
+
+    /**
+     * After: 后置通知, 在方法执行之后执行（不论是正常返回还是异常退出）
+     */
+    @After("executeWork()")
+    public void after() {
+        LOG.info("自定义注解aop切面：After");
+    }
+
 
     /**
      * 输出参数
@@ -63,8 +126,8 @@ public class CustomerAspect {
         String class_name = joinPoint.getTarget().getClass().getName();
         String method_name = joinPoint.getSignature().getName();
         //重新定义日志
-        LOG.info("类名 = {}", class_name);
-        LOG.info("方法名 = {}", method_name);
+        //LOG.info("类名 = ", class_name);
+        //LOG.info("方法名 = ", method_name);
         //获取方法的参数值数组。
         Object[] method_args = joinPoint.getArgs();
         try {
@@ -75,16 +138,6 @@ public class CustomerAspect {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @AfterReturning("executeWork()")
-    public void AfterRunning() {
-        LOG.info("自定义注解aop切面：AfterReturning");
-    }
-
-    @After("executeWork()")
-    public void after() {
-        LOG.info("自定义注解aop切面：After");
     }
 
     /**

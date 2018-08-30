@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import priv.rabbit.vio.common.ResultInfo;
+import priv.rabbit.vio.config.target.BussAnnotation;
+import priv.rabbit.vio.config.target.CustomAnnotation;
 import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;
@@ -26,14 +28,18 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
 
+
+    @BussAnnotation(moduleName="人员管理",option="添加用户")
     @Override
     public ResultInfo save(String username, String password) {
-
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS);
     }
 
-    @Override
+
+
+
     @Transactional
+    @Override
     public User login(User user) {
         String token = Jwts.builder().setSubject(user.getUserNo()).setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXP_SECENDS * 1000)).signWith(SignatureAlgorithm.HS512, JWT_SECRET).compact();
         User u = new User();
@@ -44,8 +50,9 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    @Override
+
     @Transactional
+    @Override
     public ResultInfo register(LoginRequest request) {
         User user = new User();
         user.setUsername(request.getUsername());

@@ -32,7 +32,7 @@ public class UserController {
     private UserMapper userMapper;
 
 
-    @CustomAnnotation
+
     @ApiOperation(value = "获取用户列表", notes = "获取用户列表")
     @GetMapping("/v1/app/users")
     public ResultInfo findUserList() {
@@ -40,6 +40,7 @@ public class UserController {
         System.out.println("》》》8080");
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "123456");
     }
+
 
     @CustomAnnotation
     @ApiOperation(value = "保存", notes = "保存")
@@ -73,6 +74,7 @@ public class UserController {
      * @param bindingResult
      * @return
      */
+    @CustomAnnotation
     @ApiOperation(value = "登录", notes = "登录")
     @PostMapping("/v1/app/user/login")
     public ResultInfo login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
