@@ -1,6 +1,5 @@
 package priv.rabbit.vio.dto.user;
 
-import com.alibaba.fastjson.JSONArray;
 import org.hibernate.validator.constraints.Length;
 import priv.rabbit.vio.common.IBaseRequest;
 

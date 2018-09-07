@@ -14,6 +14,7 @@ import priv.rabbit.vio.mapper.UserMapper;
 import priv.rabbit.vio.service.UserService;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
