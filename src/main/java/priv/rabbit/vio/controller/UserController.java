@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.config.target.CustomAnnotation;
@@ -52,7 +53,7 @@ public class UserController {
 
     @ApiOperation(value = "注册", notes = "注册")
     @PostMapping("/v1/app/user/register")
-    public ResultInfo register(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
+    public ResultInfo register(@Validated @RequestBody LoginRequest request, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, bindingResult.getFieldError().getDefaultMessage());
         }
@@ -72,16 +73,13 @@ public class UserController {
      * 登录
      *
      * @param request（用户名和密码）
-     * @param bindingResult
      * @return
      */
     @CustomAnnotation
     @ApiOperation(value = "登录", notes = "登录")
     @PostMapping("/v1/app/user/login")
-    public ResultInfo login(@Valid @RequestBody LoginRequest request, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            return new ResultInfo(ResultInfo.FAILURE, bindingResult.getFieldError().getDefaultMessage());
-        }
+    public ResultInfo login(@Valid @RequestBody LoginRequest request) {
+
         User user = new User();
         user.setUsername(request.getUsername());
         User findUser = userMapper.findOneByParam(user);
