@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 
 /**
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Component;
  * @author LuoFuMin
  * @data 2018/7/27
  */
-@Component
+//@Component
 public class MQSenderService {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

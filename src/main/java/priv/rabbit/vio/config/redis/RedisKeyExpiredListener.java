@@ -19,7 +19,7 @@ public class RedisKeyExpiredListener {
     }
 
     public void receiveMessage(String message) {
-        LOG.info(new Date() + "::" + "message::" + message);
+        LOG.info(new Date() + "::" + "redis-key::" + message);
         latch.countDown();
     }
 

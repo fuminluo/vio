@@ -21,6 +21,7 @@ public class RabbitController {
     @GetMapping("/hello")
     public void hello() throws Exception {
         String context = "hello";
+        System.out.println();
         rabbitTemplate.convertAndSend("hello", context);
 
     }

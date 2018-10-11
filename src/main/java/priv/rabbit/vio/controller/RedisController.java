@@ -12,6 +12,7 @@ import priv.rabbit.vio.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author LuoFuMin
@@ -38,9 +39,8 @@ public class RedisController {
     @GetMapping(value = "/redis/string")
     public void stringOperation() {
         // key、value
-        redisTemplate.opsForValue().set("name", "aaa");
-
-        System.out.println("》》》》》》" + redisTemplate.opsForValue().get("name"));
+        redisTemplate.opsForValue().set("key-a", "aaa",3, TimeUnit.SECONDS);
+        System.out.println("》》》》》》" + redisTemplate.opsForValue().get("key-a"));
     }
 
     /**

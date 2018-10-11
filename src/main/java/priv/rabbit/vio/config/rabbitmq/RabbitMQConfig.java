@@ -1,9 +1,7 @@
 package priv.rabbit.vio.config.rabbitmq;
 
 import org.springframework.amqp.core.*;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 
 /**
@@ -12,7 +10,7 @@ import org.springframework.context.annotation.Configuration;
  * @author LuoFuMin
  * @data 2018/7/27
  */
-@Configuration
+//@Configuration
 public class RabbitMQConfig {
 
     @Bean

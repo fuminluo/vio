@@ -6,7 +6,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.listener.PatternTopic;
 import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.listener.adapter.MessageListenerAdapter;
-import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -18,8 +17,8 @@ public class RedisConfig {
     }
 
     /**
-    * Redisæ¶ˆæ¯ç›‘å¬å™¨å®¹å™¨
-    * è¿™ä¸ªå®¹å™¨åŠ è½½äº†RedisConnectionFactoryå’Œæ¶ˆæ¯ç›‘å¬å™¨
+    * RedisÏûÏ¢¼àÌıÆ÷ÈİÆ÷
+    * Õâ¸öÈİÆ÷¼ÓÔØÁËRedisConnectionFactoryºÍÏûÏ¢¼àÌıÆ÷
      */
     @Bean
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
@@ -31,7 +30,7 @@ public class RedisConfig {
     }
 
     /**
-     * RedisKeyExpiredListenerå®ä¾‹
+     * RedisKeyExpiredListenerÊµÀı
      */
     @Bean
     RedisKeyExpiredListener receiver(CountDownLatch latch) {
