@@ -15,7 +15,6 @@ import priv.rabbit.vio.mapper.UserMapper;
 import priv.rabbit.vio.service.UserService;
 
 import javax.validation.Valid;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
@@ -40,7 +39,7 @@ public class UserController {
     public ResultInfo findUserList() {
         stringRedisTemplate.opsForValue().set("sprinboot-redis-messaage", "message", 10, TimeUnit.SECONDS);
         System.out.println("》》》8080");
-        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, "123456");
+        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS,userService.findList());
     }
 
 

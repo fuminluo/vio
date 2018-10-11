@@ -1,6 +1,8 @@
 package priv.rabbit.vio.service.impl;
 
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.config.target.BussAnnotation;
-import priv.rabbit.vio.config.target.CustomAnnotation;
 import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;
@@ -16,7 +17,7 @@ import priv.rabbit.vio.service.UserService;
 import priv.rabbit.vio.utils.IDUtil;
 
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 
 import static priv.rabbit.vio.common.Constant.JWT_SECRET;
 import static priv.rabbit.vio.common.Constant.TOKEN_EXP_SECENDS;
@@ -28,14 +29,11 @@ public class UserServiceImpl implements UserService {
     private UserMapper userMapper;
 
 
-
-    @BussAnnotation(moduleName="人员管理",option="添加用户")
+    @BussAnnotation(moduleName = "人员管理", option = "添加用户")
     @Override
     public ResultInfo save(String username, String password) {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS);
     }
-
-
 
 
     @Transactional
@@ -65,5 +63,14 @@ public class UserServiceImpl implements UserService {
         user.setPassword(request.getPassword());
         userMapper.insertSelective(user);
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, user);
+    }
+
+    @Override
+    public PageInfo<User> findList() {
+        PageHelper.startPage(0, 3);
+        List<User> list = userMapper.findList();
+
+        PageInfo<User> pageInfo = new PageInfo<User>(list);
+        return pageInfo;
     }
 }

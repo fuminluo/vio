@@ -235,4 +235,8 @@
     <select id="getPassword" parameterType="java.lang.String" resultType="java.lang.String">
             SELECT password FROM user WHERE username = #{username}
     </select>
+
+    <select id="findList" resultMap="BaseResultMap">
+        SELECT *  FROM user
+    </select>
 </mapper>
