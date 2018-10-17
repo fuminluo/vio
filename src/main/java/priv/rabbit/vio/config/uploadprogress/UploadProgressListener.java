@@ -1,13 +1,13 @@
 package priv.rabbit.vio.config.uploadprogress;
 
 
-import javax.servlet.http.HttpSession;
-
 import org.apache.commons.fileupload.ProgressListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import priv.rabbit.vio.entity.ProgressInfo;
+
+import javax.servlet.http.HttpSession;
 
 /**
  * 长传进度监听器
