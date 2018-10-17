@@ -36,4 +36,11 @@ public class UploadFileServiceImpl implements UploadFileService {
         System.out.println("成功");
         return null;
     }
+
+    @Async
+    @Override
+    public String syncTest() throws IOException {
+        System.out.println("异步线程 名称 ：" + Thread.currentThread().getName());
+        return "";
+    }
 }

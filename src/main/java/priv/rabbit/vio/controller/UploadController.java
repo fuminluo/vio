@@ -37,7 +37,10 @@ public class UploadController {
 
     @ApiOperation(value = "上传文件view", notes = "上传文件view")
     @GetMapping("/v1/web/upload-html")
-    public ModelAndView uploadView() {
+    public ModelAndView uploadView() throws IOException {
+        for (int i = 0; i < 20; i++) {
+            uploadFileService.syncTest();
+        }
         return new ModelAndView("upload");
     }
 

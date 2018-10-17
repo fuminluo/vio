@@ -14,4 +14,6 @@ import java.io.IOException;
 public interface UploadFileService {
 
     String pushFile(MultipartFile multipartFile) throws IOException;
+
+    String syncTest() throws IOException;
 }
