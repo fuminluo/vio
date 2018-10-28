@@ -60,6 +60,13 @@ public class UploadController {
         return new ResultInfo(ResultInfo.SUCCESS, "上传成功");
     }
 
+
+    @ApiOperation(value = "excel", notes = "excel")
+    @GetMapping("/v1/web/excel-html")
+    public String Excel() throws IOException {
+
+        return "excel";
+    }
     /**
      * process 获取进度
      *

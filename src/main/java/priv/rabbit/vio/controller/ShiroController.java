@@ -6,6 +6,8 @@ import org.apache.shiro.authc.UsernamePasswordToken;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.authz.annotation.RequiresRoles;
 import org.apache.shiro.subject.Subject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,12 +16,11 @@ import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;
 
-import javax.servlet.http.HttpServletRequest;
-
 @Api(value = "ShiroController", description = "权限管理")
 @Controller
 public class ShiroController {
 
+    private static Logger LOG = LoggerFactory.getLogger(ShiroController.class);
     @Autowired
     private UserMapper userMapper;
 
@@ -67,6 +68,7 @@ public class ShiroController {
      */
     @PostMapping("/api/v1/web/shiro/login")
     public String login(@RequestParam String username, @RequestParam String password, Model model) {
+        LOG.info("》》》login");
         // 从SecurityUtils里边创建一个 subject
         Subject subject = SecurityUtils.getSubject();
         // 在认证提交前准备 token（令牌）
@@ -100,7 +102,7 @@ public class ShiroController {
     @PostMapping("/api/v1/web/shiro/login-check")
     @ResponseBody
     public ResultInfo<?> loginCheck(@RequestParam String username, @RequestParam String password) {
-        System.out.println("login-check");
+        LOG.info("》》》login-check");
         String pwd = userMapper.getPassword(username);
 
         if (pwd == null || !pwd.equals(password)) {
