@@ -31,7 +31,6 @@ public class Test {
     //非对称密钥算法
     public static final String KEY_ALGORITHM = "RSA";
 
-
     /**
      * 密钥长度，DH算法的默认密钥长度是1024
      * 密钥长度必须是64的倍数，在512到65536位之间

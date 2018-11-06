@@ -17,8 +17,7 @@ import priv.rabbit.vio.service.UploadFileService;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 
 
 /**
@@ -58,6 +57,40 @@ public class UploadController {
         uploadFileService.pushFile(multipartFile);
         model.addAttribute("msg", "上传成功");
         return new ResultInfo(ResultInfo.SUCCESS, "上传成功");
+    }
+
+    @ApiOperation(value = "下载文件", notes = "下载文件")
+    @GetMapping("/v1/web/download")
+    public void download(HttpServletResponse res) throws IOException {
+        String fileName = "project.rar";
+        res.setHeader("content-type", "application/octet-stream");
+        res.setContentType("application/octet-stream");
+        res.setHeader("Content-Disposition", "attachment;filename=" + fileName);
+        byte[] buff = new byte[1024];
+        BufferedInputStream bis = null;
+        OutputStream os = null;
+        try {
+            os = res.getOutputStream();
+            bis = new BufferedInputStream(new FileInputStream(new File("D:\\Work\\Project\\project.rar"
+                   )));
+            int i = bis.read(buff);
+            while (i != -1) {
+                os.write(buff, 0, buff.length);
+                os.flush();
+                i = bis.read(buff);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (bis != null) {
+                try {
+                    bis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
     }
 
 

@@ -11,9 +11,9 @@ import org.springframework.test.context.web.WebAppConfiguration;
 @WebAppConfiguration
 public class VioApplicationTests {
 
-	@Test
-	public void contextLoads() {
+    @Test
+    public void contextLoads() {
 
-	}
+    }
 
 }
