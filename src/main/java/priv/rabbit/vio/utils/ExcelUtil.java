@@ -19,7 +19,7 @@ import java.util.List;
  * @Description excel 转 bean
  * @Date 2018/11/6 22:14
  **/
-public class ExcelUtils {
+public class ExcelUtil {
     public static Workbook readFile(File file) throws Exception {
         try { //xls和xlsx必须不同的处理类，POI就这么规定的
             if (file.getName().toLowerCase().endsWith(".xls")) {
@@ -164,7 +164,7 @@ public class ExcelUtils {
 
     public static void main(String[] args) {
         try {
-            List<Goods> list = ExcelUtils.getBean("D:\\new.xlsx", Goods.class);
+            List<Goods> list = ExcelUtil.getBean("D:\\new.xlsx", Goods.class);
 
             for (Goods goods : list) {
                 System.out.println("===========" + goods.getFormat());

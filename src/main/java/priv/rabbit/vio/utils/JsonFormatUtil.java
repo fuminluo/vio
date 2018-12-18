@@ -4,10 +4,10 @@ package priv.rabbit.vio.utils;
  * @author LuoFuMin
  * @data 2018/8/7
  */
-public class JsonFormatUtils {
+public class JsonFormatUtil {
     private static String SPACE = "   ";
 
-    public JsonFormatUtils() {
+    public JsonFormatUtil() {
     }
 
     public static String formatJson(String json) {

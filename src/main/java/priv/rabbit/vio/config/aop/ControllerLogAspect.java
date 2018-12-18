@@ -8,13 +8,11 @@ import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import priv.rabbit.vio.common.LoggerInfo;
-import priv.rabbit.vio.utils.JsonFormatUtils;
+import priv.rabbit.vio.utils.JsonFormatUtil;
 
 import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,7 @@ import java.util.Map;
 public class ControllerLogAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerLogAspect.class);
 
-    @Pointcut("execution(public * priv.*.*.controller.*.*(..))")
+    @Pointcut("execution(public * *..*.controller..*.*(..))")
     public void executeService() {
     }
 
@@ -81,7 +79,7 @@ public class ControllerLogAspect {
             loggerInfo.setUrl(request.getRequestURI());
             loggerInfo.setSessionId(request.getSession().getId());
             LOGGER.info("[CLS] - " + signature.getDeclaringTypeName() + "." + signature.getName());
-            LOGGER.info("[IN] - " + JsonFormatUtils.formatJson(JSON.toJSONString(loggerInfo)));
+            LOGGER.info("[IN] - " + JsonFormatUtil.formatJson(JSON.toJSONString(loggerInfo)));
         } catch (Exception e) {
 
         }
@@ -102,7 +100,7 @@ public class ControllerLogAspect {
             loggerInfo.setDuration(endTime - beginTime);
             loggerInfo.setTaskuuid(taskuuid);
             loggerInfo.setResult(keys);
-            LOGGER.info("[OUT] - " + JsonFormatUtils.formatJson(JSON.toJSONString(loggerInfo)));
+            LOGGER.info("[OUT] - " + JsonFormatUtil.formatJson(JSON.toJSONString(loggerInfo)));
         } catch (Exception e) {
 
         }
