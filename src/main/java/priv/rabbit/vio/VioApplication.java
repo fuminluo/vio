@@ -10,6 +10,8 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Properties;
 
 /**
@@ -27,18 +29,21 @@ public class VioApplication {
 
     //配置mybatis的分页插件pageHelper
     @Bean
-    public PageHelper pageHelper(){
+    public PageHelper pageHelper() {
         PageHelper pageHelper = new PageHelper();
         Properties properties = new Properties();
-        properties.setProperty("offsetAsPageNum","true");
-        properties.setProperty("rowBoundsWithCount","true");
-        properties.setProperty("reasonable","true");
-        properties.setProperty("dialect","mysql");    //配置mysql数据库的方言
+        properties.setProperty("offsetAsPageNum", "true");
+        properties.setProperty("rowBoundsWithCount", "true");
+        properties.setProperty("reasonable", "true");
+        properties.setProperty("dialect", "mysql");    //配置mysql数据库的方言
         pageHelper.setProperties(properties);
         return pageHelper;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws UnknownHostException {
         SpringApplication.run(VioApplication.class, args);
+        InetAddress address = InetAddress.getLocalHost();
+        System.out.println(address.getHostAddress());
+
     }
 }

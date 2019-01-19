@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import priv.rabbit.vio.common.ResultInfo;
-import priv.rabbit.vio.config.target.BussAnnotation;
+import priv.rabbit.vio.config.annotation.BussAnnotation;
 import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;

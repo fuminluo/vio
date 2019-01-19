@@ -1,4 +1,4 @@
-package priv.rabbit.vio.config.target;
+package priv.rabbit.vio.config.annotation;
 
 import java.lang.annotation.*;
 

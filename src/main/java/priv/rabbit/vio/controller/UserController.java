@@ -8,7 +8,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.common.ResultInfo;
-import priv.rabbit.vio.config.target.CustomAnnotation;
+import priv.rabbit.vio.config.annotation.CustomAnnotation;
 import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;

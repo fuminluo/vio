@@ -14,7 +14,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.thymeleaf.util.ArrayUtils;
-import priv.rabbit.vio.config.target.BussAnnotation;
+import priv.rabbit.vio.config.annotation.BussAnnotation;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -41,14 +41,14 @@ public class CustomerAspect {
     /**
      * 自定义注解切点：CustomAnnotation注解
      */
-    @Pointcut("@annotation(priv.rabbit.vio.config.target.CustomAnnotation)")
+    @Pointcut("@annotation(priv.rabbit.vio.config.annotation.CustomAnnotation)")
     private void executeWork() {
     }
 
     /**
      * 保存操作日志切点：BussAnnotation
      */
-    @Pointcut("@annotation(priv.rabbit.vio.config.target.BussAnnotation)")
+    @Pointcut("@annotation(priv.rabbit.vio.config.annotation.BussAnnotation)")
     public void saveOption() {
 
     }
