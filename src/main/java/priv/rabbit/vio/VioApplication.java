@@ -20,11 +20,12 @@ import java.util.Properties;
  * 会先走默认的文件处理流程并修改request对象，再执行我们定义的文件处理类。
  * exclude表示自动配置时不包括Multipart配置
  */
-@EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
+
 @SpringBootApplication
 @MapperScan(basePackages = "priv.**.mapper")
 @EnableRedisHttpSession
 @EnableFeignClients
+@EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
 public class VioApplication {
 
     //配置mybatis的分页插件pageHelper
