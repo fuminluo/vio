@@ -170,6 +170,11 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
+        <dependency>
+            <groupId>jta</groupId>
+            <artifactId>jta</artifactId>
+            <version>LATEST</version>
+        </dependency>
     </dependencies>
 
     <dependencyManagement>

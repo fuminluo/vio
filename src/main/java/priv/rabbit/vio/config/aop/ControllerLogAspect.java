@@ -4,14 +4,15 @@ import com.alibaba.fastjson.JSON;
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.Pointcut;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import priv.rabbit.vio.common.LoggerInfo;
-import priv.rabbit.vio.utils.JsonFormatUtil;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -19,8 +20,8 @@ import javax.servlet.http.HttpServletRequest;
  * @author LuoFuMin
  * @data 2018/8/7
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class ControllerLogAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerLogAspect.class);
 
@@ -39,6 +40,7 @@ public class ControllerLogAspect {
             loggerInfo.setTimestamp(beginTime);
             loggerInfo.setMethod(request.getMethod());
             Object[] args = joinPoint.getArgs();
+            LOGGER.info("requesr size :: "+ObjectSizeCalculator.getObjectSize(args));
             //数据内容大于1000字节不转换
             if (ObjectSizeCalculator.getObjectSize(args) > 1000) {
                 loggerInfo.setParameters("参数过大不解析！");
@@ -69,7 +71,7 @@ public class ControllerLogAspect {
             loggerInfo.setDuration(endTime - beginTime);
             loggerInfo.setTaskuuid(taskuuid);
             loggerInfo.setResult(keys);
-            LOGGER.info("[OUT] - " + JsonFormatUtil.formatJson(JSON.toJSONString(loggerInfo)));
+            LOGGER.info("[OUT] - " + JSON.toJSONString(loggerInfo));
         } catch (Exception e) {
 
         }

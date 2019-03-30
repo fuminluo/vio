@@ -8,5 +8,5 @@ package priv.rabbit.vio.factory;
  * @Date 2018/8/30 0:08
  **/
 public interface Fruit {
-    public abstract void eat();
+    abstract void eat();
 }

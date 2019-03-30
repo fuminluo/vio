@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
+import priv.rabbit.vio.config.annotation.Encrypt;
 import priv.rabbit.vio.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -168,6 +169,7 @@ public class RedisController {
     }
 
     @RequestMapping(value = "/sessions", method = RequestMethod.GET)
+    @Encrypt
     public Object sessions (HttpServletRequest request){
         Map<String, Object> map = new HashMap<>();
         map.put("sessionId", request.getSession().getId());

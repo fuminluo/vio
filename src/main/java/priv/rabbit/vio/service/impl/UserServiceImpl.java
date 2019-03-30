@@ -14,7 +14,6 @@ import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;
 import priv.rabbit.vio.service.UserService;
-import priv.rabbit.vio.utils.IDUtil;
 
 import java.util.Date;
 import java.util.List;
@@ -58,8 +57,6 @@ public class UserServiceImpl implements UserService {
         if (userCheck != null) {
             return new ResultInfo(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE, "用户名已存在");
         }
-        String userNo = IDUtil.createID(1, 7);
-        user.setUserNo(userNo);
         user.setPassword(request.getPassword());
         userMapper.insertSelective(user);
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, user);
