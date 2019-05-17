@@ -34,6 +34,28 @@ public class ResultInfo<T> {
     private T data;
     private Long timestamp;
 
+    public static <T> ResultInfo<T> OK() {
+        return new ResultInfo<>(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS);
+    }
+
+    public static <T> ResultInfo<T> OK(String message) {
+        return new ResultInfo<>(ResultInfo.SUCCESS, message);
+    }
+
+
+    public static <T> ResultInfo<T> OK(T data) {
+        return new ResultInfo<>(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, data);
+    }
+
+
+    public static <T>ResultInfo<T> FALL(String message) {
+        return new ResultInfo<>(ResultInfo.FAILURE, message);
+    }
+
+    public static ResultInfo<?> FALL() {
+        return new ResultInfo<>(ResultInfo.FAILURE, ResultInfo.MSG_FAILURE);
+    }
+
     public ResultInfo(Integer code) {
         this.code = code;
     }

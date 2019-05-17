@@ -17,8 +17,8 @@ public class RedisConfig {
     }
 
     /**
-    * RedisÏûÏ¢¼àÌıÆ÷ÈİÆ÷
-    * Õâ¸öÈİÆ÷¼ÓÔØÁËRedisConnectionFactoryºÍÏûÏ¢¼àÌıÆ÷
+     * Redisæ¶ˆæ¯ç›‘å¬å™¨å®¹å™¨
+     * è¿™ä¸ªå®¹å™¨åŠ è½½äº†RedisConnectionFactoryå’Œæ¶ˆæ¯ç›‘å¬å™¨
      */
     @Bean
     RedisMessageListenerContainer container(RedisConnectionFactory connectionFactory,
@@ -30,7 +30,7 @@ public class RedisConfig {
     }
 
     /**
-     * RedisKeyExpiredListenerÊµÀı
+     * RedisKeyExpiredListenerå®ä¾‹
      */
     @Bean
     RedisKeyExpiredListener receiver(CountDownLatch latch) {

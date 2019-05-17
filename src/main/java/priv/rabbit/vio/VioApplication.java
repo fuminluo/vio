@@ -10,7 +10,6 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
-import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Properties;
 
@@ -43,8 +42,5 @@ public class VioApplication {
 
     public static void main(String[] args) throws UnknownHostException {
         SpringApplication.run(VioApplication.class, args);
-        InetAddress address = InetAddress.getLocalHost();
-        System.out.println(address.getHostAddress());
-
     }
 }
