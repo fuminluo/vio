@@ -12,9 +12,8 @@ import priv.rabbit.vio.common.ResultInfo;
  **/
 public interface Payment {
     /**
-     *
-     * @param uid   表示人的uid
-     * @param amount  表示支付的金额
+     * @param uid    表示人的uid
+     * @param amount 表示支付的金额
      * @return
      */
     ResultInfo<T> pay(String uid, double amount);

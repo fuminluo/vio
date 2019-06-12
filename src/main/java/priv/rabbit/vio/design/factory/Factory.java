@@ -1,4 +1,7 @@
-package priv.rabbit.vio.factory;
+package priv.rabbit.vio.design.factory;
+
+
+import priv.rabbit.vio.design.Fruit;
 
 /**
  * 反射工厂
@@ -19,7 +22,7 @@ public class Factory {
     }
 
     public static void main(String[] args) {
-        Fruit f = Factory.getInstance("priv.rabbit.vio.factory.Apple");
+        Fruit f = Factory.getInstance("priv.rabbit.vio.design.factory.Apple");
         if (f != null) {
             f.eat();
         }

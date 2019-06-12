@@ -1,4 +1,7 @@
-package priv.rabbit.vio.factory;
+package priv.rabbit.vio.design.factory;
+
+
+import priv.rabbit.vio.design.Fruit;
 
 /**
  * 橘子类

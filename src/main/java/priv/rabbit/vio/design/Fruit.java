@@ -1,4 +1,4 @@
-package priv.rabbit.vio.factory;
+package priv.rabbit.vio.design;
 
 /**
  * 水果接口
@@ -8,5 +8,5 @@ package priv.rabbit.vio.factory;
  * @Date 2018/8/30 0:08
  **/
 public interface Fruit {
-    abstract void eat();
+     void eat();
 }
