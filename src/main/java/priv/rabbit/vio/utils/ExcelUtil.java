@@ -3,6 +3,7 @@ package priv.rabbit.vio.utils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.util.StringUtils;
 import priv.rabbit.vio.config.excel.ExcelCell;
 import priv.rabbit.vio.dto.excel.Goods;
 
@@ -11,7 +12,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Field;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -20,6 +23,9 @@ import java.util.List;
  * @Date 2018/11/6 22:14
  **/
 public class ExcelUtil {
+
+    private static final DecimalFormat df = new DecimalFormat("#.####");
+
     public static Workbook readFile(File file) throws Exception {
         try { //xls和xlsx必须不同的处理类，POI就这么规定的
             if (file.getName().toLowerCase().endsWith(".xls")) {
@@ -76,11 +82,48 @@ public class ExcelUtil {
             if (cell.getCellTypeEnum() == CellType.STRING) {
                 arr[i] = cell.getStringCellValue();
             } else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
-                arr[i] = cell.getNumericCellValue();
+                arr[i] = df.format(cell.getNumericCellValue());
             } else {
             }
         }
         return arr;
+    }
+
+    public static <T extends Object> T convertBeanFromArray(int rowNum, Object[] arr, Class<T> clazz, List errorMsgList) throws Exception {
+        T entity;
+        try {
+            entity = clazz.newInstance();
+            Field[] fields = clazz.getDeclaredFields();
+            for (Field field : fields) {
+                if (!field.isAnnotationPresent(ExcelCell.class)) continue;
+                field.setAccessible(true);
+                ExcelCell anno = field.getAnnotation(ExcelCell.class);
+                Class<?> cellType = anno.Type();
+                boolean required = anno.required();
+                Integer col = anno.col();
+                //行号
+                if (-1 == col) {
+                    field.set(entity, rowNum);
+                    continue;
+                }
+                if (col >= arr.length) continue;
+                if (arr[col] == null || StringUtils.isEmpty(arr[col].toString()) && true == required) {
+                    String msg = "第" + rowNum + "行" + "第" + ++col + "列不能为空";
+                    errorMsgList.add(msg);
+                    continue;
+                }
+                if (arr[col] == null) continue;
+                if (cellType == null) {
+                    field.set(entity, arr[col]);
+                } else {
+                    field.set(entity, numericByStr(cellType, arr[col]));
+                }
+            }
+            return entity;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception(e.getMessage());
+        }
     }
 
     public static <T extends Object> T convertBeanFromArray(Object[] arr, Class<T> clazz) throws Exception {
@@ -133,6 +176,22 @@ public class ExcelUtil {
             list.add(t);
         }
         return list;
+    }
+
+
+    public static <T> HashMap<String, List> getExcelDExcelData(String path, Class<T> clazz) throws Exception {
+        HashMap<String, List> excelData = new HashMap<>();
+        List<T> okList = new ArrayList<T>();
+        List<T> errorMsgList = new ArrayList<T>();
+        Workbook book = readFile(path);
+        for (int i = 1; i <= book.getSheetAt(0).getLastRowNum(); i++) {
+            Object[] arr = convertArrayByRow(book.getSheetAt(0).getRow(i));
+            T t = convertBeanFromArray(i, arr, clazz, errorMsgList);
+            okList.add(t);
+        }
+        excelData.put("okList", okList);
+        excelData.put("errorMsgList", errorMsgList);
+        return excelData;
     }
 
     public static <T> List<T> getBean(File file, Class<T> clazz) throws Exception {

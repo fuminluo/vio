@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 
 import java.net.UnknownHostException;
@@ -24,6 +25,7 @@ import java.util.Properties;
 @MapperScan(basePackages = "priv.**.mapper")
 @EnableRedisHttpSession
 @EnableFeignClients
+@EnableAsync
 @EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
 public class VioApplication {
 

@@ -1,15 +1,17 @@
 package priv.rabbit.vio.controller;
 
 import io.swagger.annotations.Api;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.scheduling.annotation.Async;
+import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.config.annotation.Encrypt;
+import priv.rabbit.vio.config.redis.DistributedLocker;
 import priv.rabbit.vio.entity.User;
+import priv.rabbit.vio.service.RedisLockService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -19,14 +21,20 @@ import java.util.concurrent.TimeUnit;
  * @author LuoFuMin
  * @data 2018/7/17
  */
-@Api(value = "RedisController", description="redis案例")
+@Api(value = "RedisController", description = "redis案例")
 @RestController
 public class RedisController {
+
+    private static Logger LOG = LoggerFactory.getLogger(RedisController.class);
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    RedisLockService redisLockService;
+
 
     // redisTemplate.opsForValue();//操作字符串
     // redisTemplate.opsForHash();//操作hash
@@ -40,7 +48,7 @@ public class RedisController {
     @GetMapping(value = "/redis/string")
     public void stringOperation() {
         // key、value
-        redisTemplate.opsForValue().set("key-a", "aaa",3, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set("key-a", "aaa", 3, TimeUnit.SECONDS);
         System.out.println("》》》》》》" + redisTemplate.opsForValue().get("key-a"));
     }
 
@@ -115,7 +123,7 @@ public class RedisController {
         System.out.println("resultList1:" + resultList1);
         System.out.println("resultList2:" + resultList2);
 
-        System.out.println("===="+redisTemplate.opsForList().leftPop("list"));
+        System.out.println("====" + redisTemplate.opsForList().leftPop("list"));
 
 
     }
@@ -161,7 +169,7 @@ public class RedisController {
 
 
     @RequestMapping(value = "/first", method = RequestMethod.GET)
-    public Map<String, Object> firstResp (HttpServletRequest request){
+    public Map<String, Object> firstResp(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         request.getSession().setAttribute("request Url", request.getRequestURL());
         map.put("request Url", request.getRequestURL());
@@ -170,10 +178,25 @@ public class RedisController {
 
     @RequestMapping(value = "/sessions", method = RequestMethod.GET)
     @Encrypt
-    public Object sessions (HttpServletRequest request){
+    public Object sessions(HttpServletRequest request) {
         Map<String, Object> map = new HashMap<>();
         map.put("sessionId", request.getSession().getId());
         map.put("message", request.getSession().getAttribute("map"));
         return map;
     }
+
+
+    /**
+     *  分布式锁
+     * @param waitTime 获取锁等待时间
+     * @param lesaeTime 锁默认超时时间
+     * @param sleepTime 县城睡眠时间
+     * @return
+     */
+    @GetMapping("/redisson")
+    public String  redissonTest(@RequestParam(required = false,defaultValue = "3") Long waitTime, @RequestParam(required = false,defaultValue = "10") Long lesaeTime, @RequestParam(required = false,defaultValue = "15") Long sleepTime) {
+        redisLockService.tryLock(waitTime, lesaeTime, sleepTime);
+        return  new Date()+"成功";
+    }
+
 }

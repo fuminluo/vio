@@ -12,6 +12,8 @@ import java.lang.annotation.*;
 public @interface ExcelCell {
     int col();
 
+    boolean required() default true;
+
     Class<?> Type() default String.class;
 }
 

@@ -18,9 +18,8 @@ public class VioHandlerInterceptor implements HandlerInterceptor {
     //在请求处理之前进行调用（Controller方法调用之前
     @Override
     public boolean preHandle(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, Object o) throws Exception {
-        System.out.printf("preHandle被调用");
-        throw new BaseException(500,"HandlerInterceptor");
-       // return true;    //如果false，停止流程，api被拦截
+
+        return true;    //如果false，停止流程，api被拦截
     }
 
     //请求处理之后进行调用，但是在视图被渲染之前（Controller方法调用之后）
