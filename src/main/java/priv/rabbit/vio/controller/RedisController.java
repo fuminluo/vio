@@ -46,10 +46,12 @@ public class RedisController {
      * 字符串
      */
     @GetMapping(value = "/redis/string")
-    public void stringOperation() {
+    public void stringOperation(String key) {
         // key、value
-        redisTemplate.opsForValue().set("key-a", "aaa", 3, TimeUnit.SECONDS);
-        System.out.println("》》》》》》" + redisTemplate.opsForValue().get("key-a"));
+        for (int i = 0; i < 10; i++) {
+            stringRedisTemplate.opsForValue().set("lock-test" + i, "lock" + i);
+            stringRedisTemplate.opsForValue().set("test" + i, "100", 1, TimeUnit.SECONDS);
+        }
     }
 
     /**
@@ -187,16 +189,17 @@ public class RedisController {
 
 
     /**
-     *  分布式锁
-     * @param waitTime 获取锁等待时间
+     * 分布式锁
+     *
+     * @param waitTime  获取锁等待时间
      * @param lesaeTime 锁默认超时时间
-     * @param sleepTime 县城睡眠时间
+     * @param sleepTime 线程睡眠时间
      * @return
      */
     @GetMapping("/redisson")
-    public String  redissonTest(@RequestParam(required = false,defaultValue = "3") Long waitTime, @RequestParam(required = false,defaultValue = "10") Long lesaeTime, @RequestParam(required = false,defaultValue = "15") Long sleepTime) {
+    public String redissonTest(@RequestParam(required = false, defaultValue = "3") Long waitTime, @RequestParam(required = false, defaultValue = "10") Long lesaeTime, @RequestParam(required = false, defaultValue = "15") Long sleepTime) {
         redisLockService.tryLock(waitTime, lesaeTime, sleepTime);
-        return  new Date()+"成功";
+        return new Date() + "成功";
     }
 
 }
