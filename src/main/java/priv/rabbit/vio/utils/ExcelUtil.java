@@ -1,5 +1,7 @@
 package priv.rabbit.vio.utils;
 
+import org.apache.commons.lang.time.DateFormatUtils;
+import org.apache.poi.hssf.usermodel.HSSFDateUtil;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -14,6 +16,7 @@ import java.io.InputStream;
 import java.lang.reflect.Field;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
@@ -79,12 +82,43 @@ public class ExcelUtil {
         for (int i = 0; i < cols; i++) {
             Cell cell = row.getCell(i);
             if (cell == null) continue;
-            if (cell.getCellTypeEnum() == CellType.STRING) {
+            CellType cellType = cell.getCellType();
+            switch (cellType) {
+                case NUMERIC:
+                    if (HSSFDateUtil.isCellDateFormatted(cell)) {
+                        Date date = cell.getDateCellValue();
+                        arr[i] = DateFormatUtils.format(date, "yyyy-MM-dd HH:mm:ss");
+                    } else {
+                        double dValue = cell.getNumericCellValue();
+                        arr[i] = df.format(dValue);
+                    }
+                    break;
+                case STRING:
+                    arr[i] = cell.getStringCellValue();
+                    break;
+                case BOOLEAN:
+                    arr[i] = String.valueOf(cell.getBooleanCellValue());
+                    break;
+                case FORMULA:
+                    arr[i] = cell.getCellFormula();
+                    break;
+                case BLANK:
+                    arr[i] = "";
+                    break;
+                case ERROR:
+                    arr[i] = "读取出错";
+                    break;
+                default:
+                    arr[i] = "未读取成功";
+                    break;
+            }
+
+        /*    if (cell.getCellTypeEnum() == CellType.STRING) {
                 arr[i] = cell.getStringCellValue();
             } else if (cell.getCellTypeEnum() == CellType.NUMERIC) {
                 arr[i] = df.format(cell.getNumericCellValue());
             } else {
-            }
+            }*/
         }
         return arr;
     }
