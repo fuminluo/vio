@@ -4,12 +4,10 @@ import com.alibaba.fastjson.JSON;
 import jdk.nashorn.internal.ir.debug.ObjectSizeCalculator;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.Signature;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
+import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
 import priv.rabbit.vio.common.LoggerInfo;
@@ -20,8 +18,8 @@ import javax.servlet.http.HttpServletRequest;
  * @author LuoFuMin
  * @data 2018/8/7
  */
-//@Aspect
-//@Component
+@Aspect
+@Component
 public class ControllerLogAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerLogAspect.class);
 
@@ -29,24 +27,34 @@ public class ControllerLogAspect {
     public void executeService() {
     }
 
+
     @Before("executeService()")
     public void doBeforeAdvice(JoinPoint joinPoint) {
         try {
             Signature signature = joinPoint.getSignature();
             HttpServletRequest request = (HttpServletRequest) RequestContextHolder.getRequestAttributes().resolveReference(RequestAttributes.REFERENCE_REQUEST);
+
+            LOGGER.info("getContentType  :: " + request.getContentType());
+
             long beginTime = System.currentTimeMillis();
             request.setAttribute("beginTime", beginTime);
             LoggerInfo loggerInfo = new LoggerInfo();
             loggerInfo.setTimestamp(beginTime);
             loggerInfo.setMethod(request.getMethod());
             Object[] args = joinPoint.getArgs();
-            LOGGER.info("requesr size :: "+ObjectSizeCalculator.getObjectSize(args));
+            LOGGER.info("requesr size :: " + ObjectSizeCalculator.getObjectSize(args));
             //数据内容大于1000字节不转换
-            if (ObjectSizeCalculator.getObjectSize(args) > 1000) {
+            /*if (ObjectSizeCalculator.getObjectSize(args) > 1000) {
                 loggerInfo.setParameters("参数过大不解析！");
             } else {
                 loggerInfo.setParameters(args);
+            }*/
+            if (request.getContentType() != null && request.getContentType().contains("multipart/form-data") && request.getContentType().contains("WebKitFormBoundary")){
+                loggerInfo.setParameters("上传文件");
+            } else {
+                loggerInfo.setParameters(args);
             }
+
             loggerInfo.setUrl(request.getRequestURI());
             loggerInfo.setSessionId(request.getSession().getId());
             LOGGER.info("》》 [CLS] - " + signature.getDeclaringTypeName() + "." + signature.getName());
