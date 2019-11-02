@@ -37,3 +37,24 @@ CREATE TABLE `user`  (
 ) ENGINE = InnoDB CHARACTER SET = utf8 COLLATE = utf8_bin ROW_FORMAT = Compact;
 
 SET FOREIGN_KEY_CHECKS = 1;
+
+CREATE TABLE `tbl_dept` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `dept_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+CREATE TABLE `tbl_employee` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `last_name` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `gender` char(1) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `email` varchar(255) CHARACTER SET utf8 COLLATE utf8_unicode_ci DEFAULT NULL,
+  `dept_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `fk_emp_dept` (`dept_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
+
+
+
+
