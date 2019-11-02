@@ -16,6 +16,9 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import priv.rabbit.vio.config.redis.DistributedLocker;
+import priv.rabbit.vio.entity.Department;
+import priv.rabbit.vio.entity.Employee;
+import priv.rabbit.vio.mapper.EmployeeMapper;
 
 import java.io.BufferedWriter;
 import java.net.MalformedURLException;
@@ -30,7 +33,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @WebAppConfiguration
-@AutoConfigureRestDocs(outputDir = "build/asciidoc/snippets")
 @AutoConfigureMockMvc
 public class VioApplicationTests {
 
@@ -38,9 +40,26 @@ public class VioApplicationTests {
     @Autowired
     DistributedLocker distributedLocker;
 
+    @Autowired
+    EmployeeMapper employeeMapper;
+
     @Test
     public void contextLoads() {
+        employee();
 
+    }
+
+    void employee() {
+        Employee employee = employeeMapper.getEmpAndDept(1);
+        System.out.println("===getDepartmentName===" + employee.getDept().getDepartmentName());
+
+        Department department = employeeMapper.getDeptByIdPlus(1);
+
+        System.out.println("===getEmps===" + department.getEmps().size());
+    }
+
+
+    void lock() {
 
         String key = "redisson_key";
         for (int i = 0; i < 100; i++) {

@@ -10,11 +10,11 @@ public class IDUtil {
 
 
     /**
-     *@描述 生成随机数
-     *@参数  [firstNumber：首位数字, length：随机数长度]
-     *@返回值  java.lang.String
-     *@创建人  LuoFuMIn
-     *@创建时间  2018/7/16
+     * @描述 生成随机数
+     * @参数 [firstNumber：首位数字, length：随机数长度]
+     * @返回值 java.lang.String
+     * @创建人 LuoFuMIn
+     * @创建时间 2018/7/16
      */
     public static String createID(int firstNumber, int length) {
 
@@ -28,9 +28,7 @@ public class IDUtil {
     }
 
     public static void main(String[] args) {
-        for (int i = 0; i < 130; i++) {
-            System.out.println("======" + IDUtil.createID(1,7));
-        }
+        System.out.println("=====" + "multipart/form-data;".indexOf("multipart/form-data"));
 
     }
 }
