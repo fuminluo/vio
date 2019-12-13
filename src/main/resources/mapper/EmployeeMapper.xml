@@ -27,6 +27,22 @@
         AND e.id = #{id}
     </select>
 
+    <select id="getEmpAndDepts" resultMap="MyDifEmp">
+        SELECT
+        e.id,
+        e.last_name last_name,
+        e.gender gender,
+        d.id dept_id,
+        d.dept_name dept_name
+        FROM
+        tbl_employee e,
+        tbl_dept d
+        WHERE
+        e.dept_id = d.id
+        AND e.id = #{id}
+    </select>
+
+
 
     <!-- collection嵌套结果集的方式，定义关联的集合类型元素的封装规则-->
     <!-- 嵌套结果集的方式，使用collection标签定义关联的集合类型的属性封装规则 -->

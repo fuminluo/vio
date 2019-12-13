@@ -25,6 +25,7 @@ import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -55,7 +56,9 @@ public class VioApplicationTests {
 
         Department department = employeeMapper.getDeptByIdPlus(1);
 
-        System.out.println("===getEmps===" + department.getEmps().size());
+        List<Employee> list = employeeMapper.getEmpAndDepts(1);
+
+        System.out.println("===getEmps===" + list.get(0).getDept().getDepartmentName());
     }
 
 

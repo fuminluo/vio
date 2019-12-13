@@ -7,7 +7,7 @@ import java.util.List;
  * @Description
  * @Date 2019/11/1 21:09
  **/
-public class Department {
+public class  Department {
 
     private Integer id;
     private String departmentName;
