@@ -13,6 +13,6 @@ public class MybatisInterceptorConfig {
 
     @Bean
     MybatisInterceptor mybatisInterceptor(){
-
+        return new MybatisInterceptor();
     }
 }

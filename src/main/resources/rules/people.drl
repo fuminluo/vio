@@ -1,0 +1,11 @@
+package com.ytooo.bean
+import com.ytooo.bean.People
+dialect  "java"
+
+rule "man"
+    when
+        $p : People(sex == 1 && drlType == "people")
+        eval(true)
+    then
+        $p.setName("是男孩");
+end

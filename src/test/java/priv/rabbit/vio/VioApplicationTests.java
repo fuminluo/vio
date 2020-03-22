@@ -3,6 +3,8 @@ package priv.rabbit.vio;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kie.api.KieBase;
+import org.kie.api.runtime.KieSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDocs;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import priv.rabbit.vio.config.redis.DistributedLocker;
 import priv.rabbit.vio.entity.Department;
 import priv.rabbit.vio.entity.Employee;
+import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.EmployeeMapper;
 
 import java.io.BufferedWriter;
@@ -44,9 +47,19 @@ public class VioApplicationTests {
     @Autowired
     EmployeeMapper employeeMapper;
 
+    @Autowired
+    private KieSession session;
+
+    @Autowired
+    private KieBase kieBase;
+
     @Test
     public void contextLoads() {
-        employee();
+        User people = new User();
+        people.setUsername("people");
+        people.setSex(1);
+        session.insert(people);//插入
+        session.fireAllRules();//执行规则
 
     }
 
