@@ -20,8 +20,6 @@ public class Customer {
     private String customerLastName;
     private boolean status;
 
-    private List<Company> companyList;
-
     public Customer(String customerId, String customerName, String customerLastName, boolean status) {
         super();
         this.customerId = customerId;

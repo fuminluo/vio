@@ -8,7 +8,7 @@ package priv.rabbit.vio.dto;
 public class Dept {
     private String dname;
     private String loc;
-    private Company company = new Company();
+    private Company company;
     public String getDname() {
         return dname;
     }

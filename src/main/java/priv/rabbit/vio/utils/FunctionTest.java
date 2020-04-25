@@ -2,14 +2,11 @@ package priv.rabbit.vio.utils;
 
 import priv.rabbit.vio.design.converter.AbstractConverter;
 import priv.rabbit.vio.design.converter.Customer;
-import priv.rabbit.vio.design.converter.CustomerDto;
 import priv.rabbit.vio.design.converter.CustomerConverter;
-import priv.rabbit.vio.dto.Company;
+import priv.rabbit.vio.design.converter.CustomerDto;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-
 /**
  * @Author administered
  * @Description
@@ -37,9 +34,6 @@ public class FunctionTest {
         List<CustomerDto> dtoEntities = abstractConverter.createFromEntities(customers);
         dtoEntities.forEach(System.out::println );
         dtoEntities.forEach((customer) -> System.out.println(customer.getCustomerId()));
-
-       List<Company> list = dtoCustomer.getCompanyList().stream().map(e->new Company(e.getAddress(),e.getName())).collect(Collectors.toList());
-
 
     }
 }
