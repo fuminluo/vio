@@ -67,13 +67,13 @@ public class RedisKeyExpiredListener {
             LOG.error(">> 出现异常:{}", e);
             // TODO 写异常表记录
         } finally {
-            if (result){
+            if (result) {
                 boolean delete = redisTemplate.delete(redisLockkey);
                 LOG.info(">> finally 执行完成删除 {} 锁 : {}", redisLockkey, delete);
             }
             //TODO 判断异常表有无记录
             LocalDateTime endTine = LocalDateTime.now();
-            Long timeConsuming = Duration.between(beginTime, endTine).toMillis();
+            double timeConsuming = (double)Duration.between(beginTime, endTine).toMillis() / 1000;
             LOG.info(">> beginTime : {} , endTine : {} , timeConsuming : {}", beginTime, endTine, timeConsuming);
         }
     }
