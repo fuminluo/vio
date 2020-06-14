@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
  * @Description
  * @Date 2019/7/3 21:33
  **/
-@Component
+//@Component
 public class RedissonDistributedLocker implements DistributedLocker {
 
     @Autowired

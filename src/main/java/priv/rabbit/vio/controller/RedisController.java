@@ -4,14 +4,15 @@ import io.swagger.annotations.Api;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.scheduling.annotation.Async;
+import org.springframework.data.redis.core.script.DefaultRedisScript;
+import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.web.bind.annotation.*;
+import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.config.annotation.Encrypt;
-import priv.rabbit.vio.config.redis.DistributedLocker;
 import priv.rabbit.vio.entity.User;
-import priv.rabbit.vio.service.RedisLockService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -32,9 +33,6 @@ public class RedisController {
     @Autowired
     private RedisTemplate redisTemplate;
 
-    @Autowired
-    RedisLockService redisLockService;
-
 
     // redisTemplate.opsForValue();//操作字符串
     // redisTemplate.opsForHash();//操作hash
@@ -42,15 +40,73 @@ public class RedisController {
     // redisTemplate.opsForSet();//操作set
     // redisTemplate.opsForZSet();//操作有序set
 
+
+    /**
+     * 加锁
+     *
+     * @param lockkey
+     * @param lockValue
+     * @param lockTime
+     * @return
+     */
+    @PostMapping(value = "/redis/lock")
+    public ResultInfo lock(@RequestParam String lockkey, @RequestParam String lockValue, @RequestParam(defaultValue = "10") Long lockTime) {
+        //尝试枷锁
+        boolean lock = redisTemplate.opsForValue().setIfAbsent(lockkey, lockValue);
+        LOG.info(" >>> 加锁 : {}", lock);
+        if (lock) {
+            //获取锁成功
+            LOG.info("start lock lockNxExJob success");
+            redisTemplate.opsForValue().set(lockkey, lockValue, lockTime, TimeUnit.SECONDS);
+        }
+        return ResultInfo.OK(lock);
+    }
+
+    /**
+     * 解锁
+     */
+    @PostMapping(value = "/redis/un-lock")
+    public ResultInfo unLock(@RequestParam String lockkey) {
+        boolean lock = redisTemplate.delete(lockkey);
+        LOG.info(" >>> 解锁锁 : {}", lock);
+        return ResultInfo.OK(lock);
+    }
+
+
+    /**
+     * 加锁
+     *
+     * @param lockkey
+     * @param lockValue
+     * @param lockTime
+     * @return
+     */
+    @PostMapping(value = "/redis/lua/lock")
+    public ResultInfo luaLock(@RequestParam String lockkey, @RequestParam String lockValue, @RequestParam(defaultValue = "10") Long lockTime) {
+        DefaultRedisScript<Boolean> lockScript = new DefaultRedisScript<Boolean>();
+        lockScript.setScriptSource(
+                new ResourceScriptSource(new ClassPathResource("redis/redisLock.lua")));
+        lockScript.setResultType(Boolean.class);
+        // 封装参数
+        List<Object> keyList = new ArrayList<Object>();
+        keyList.add(lockkey);
+        keyList.add(lockValue);
+        keyList.add(lockTime.toString());
+        Boolean result = (Boolean) redisTemplate.execute(lockScript, keyList);
+        LOG.info("》》》 加锁结果 redis set result：" + result);
+        return ResultInfo.OK(result);
+    }
+
+
     /**
      * 字符串
      */
     @GetMapping(value = "/redis/string")
     public void stringOperation(String key) {
         // key、value
-        for (int i = 0; i < 10; i++) {
-            stringRedisTemplate.opsForValue().set("lock-test" + i, "lock" + i);
-            stringRedisTemplate.opsForValue().set("test" + i, "100", 1, TimeUnit.SECONDS);
+        for (int i = 0; i < 2; i++) {
+            //stringRedisTemplate.opsForValue().set("lock-test" + i, "lock" + i);
+            stringRedisTemplate.opsForValue().set("test" + i, "value", 1, TimeUnit.SECONDS);
         }
     }
 
@@ -187,19 +243,5 @@ public class RedisController {
         return map;
     }
 
-
-    /**
-     * 分布式锁
-     *
-     * @param waitTime  获取锁等待时间
-     * @param lesaeTime 锁默认超时时间
-     * @param sleepTime 线程睡眠时间
-     * @return
-     */
-    @GetMapping("/redisson")
-    public String redissonTest(@RequestParam(required = false, defaultValue = "3") Long waitTime, @RequestParam(required = false, defaultValue = "10") Long lesaeTime, @RequestParam(required = false, defaultValue = "15") Long sleepTime) {
-        redisLockService.tryLock(waitTime, lesaeTime, sleepTime);
-        return new Date() + "成功";
-    }
 
 }

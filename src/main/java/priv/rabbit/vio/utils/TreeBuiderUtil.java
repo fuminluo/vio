@@ -107,6 +107,7 @@ public class TreeBuiderUtil {
        /* List<TreeNode> trees_ = buildByRecursive(list,"0");
         System.out.println( JSON.toJSONString(trees_));*/
 
+        System.out.println("===Math.random()=="+Math.random());
 
     }
 

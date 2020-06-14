@@ -12,7 +12,7 @@ import org.redisson.config.Config;
  * @Description
  * @Date 2019/7/3 21:34
  **/
-@Configuration
+//@Configuration
 public class Redissonconfig {
 
     @Value("${spring.redis.host}")
