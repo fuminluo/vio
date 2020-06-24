@@ -171,8 +171,6 @@ public class RedisController {
         redisTemplate.opsForList().leftPush("listkey1", list1);
         redisTemplate.opsForList().rightPush("listkey2", list2);
 
-        redisTemplate.opsForList().leftPush("list", "a");
-        redisTemplate.opsForList().leftPush("list", "b");
 
         // 取数据
         List<String> resultList1 = (List<String>) redisTemplate.opsForList().leftPop("listkey1");
@@ -181,9 +179,33 @@ public class RedisController {
         System.out.println("resultList1:" + resultList1);
         System.out.println("resultList2:" + resultList2);
 
-        System.out.println("====" + redisTemplate.opsForList().leftPop("list"));
+
+        //从左边插入，即插入到列表头部
+        redisTemplate.opsForList().leftPush("product:list", "iphone xs max");
+        redisTemplate.opsForList().leftPush("product:list", "thinkpad x1 carbon");
+        redisTemplate.opsForList().leftPush("product:list", "mackBook pro13");
+        redisTemplate.opsForList().leftPush("product:list", "HuaWei Mate20 pro");
 
 
+        //查询list中指定范围的内容
+        List<String> list = redisTemplate.opsForList().range("product:list", 0, -1);
+        System.out.println("查询list中指定范围的内容  "+list);
+
+        //修剪列表，使其只包含指定范围内的元素
+        redisTemplate.opsForList().trim("product:list", 0, 2);
+
+        //查询列表长度
+        System.out.println("查询列表长度  "+redisTemplate.opsForList().size("product:list"));
+
+        //弹出最左边元素
+        redisTemplate.opsForList().leftPop("product:list");
+        //移出并获取列表的第一个元素， 如果列表没有元素会阻塞列表直到等待超时。
+        redisTemplate.opsForList().leftPop("k1", 10, TimeUnit.SECONDS);
+
+        //弹出最右边元素
+        redisTemplate.opsForList().rightPop("product:list");
+        //弹出k1最右边元素并放入k2最左边
+        redisTemplate.opsForList().rightPopAndLeftPush("product:list", "game:list");
     }
 
     /**

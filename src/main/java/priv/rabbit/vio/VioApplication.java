@@ -10,8 +10,10 @@ import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
+import priv.rabbit.vio.factory.*;
 
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.Properties;
 
 /**
@@ -42,7 +44,8 @@ public class VioApplication {
         return pageHelper;
     }
 
-    public static void main(String[] args) throws UnknownHostException {
+
+    public static void main(String[] args) {
         SpringApplication.run(VioApplication.class, args);
     }
 }

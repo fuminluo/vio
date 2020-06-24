@@ -74,7 +74,7 @@ public class RedisKeyExpiredListener {
             //TODO 判断异常表有无记录
             LocalDateTime endTine = LocalDateTime.now();
             double timeConsuming = (double)Duration.between(beginTime, endTine).toMillis() / 1000;
-            LOG.info(">> beginTime : {} , endTine : {} , timeConsuming : {}", beginTime, endTine, timeConsuming);
+            LOG.info(">> beginTime : {} , endTine : {} , timeConsuming : {} s", beginTime, endTine, timeConsuming);
         }
     }
 }
