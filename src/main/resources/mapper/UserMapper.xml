@@ -237,6 +237,6 @@
     </select>
 
     <select id="findList" resultMap="BaseResultMap">
-        SELECT *  FROM user
+        SELECT  *  FROM user
     </select>
 </mapper>

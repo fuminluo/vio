@@ -37,7 +37,6 @@ public class UserController {
     @ApiOperation(value = "获取用户列表", notes = "获取用户列表")
     @GetMapping("/v1/app/users")
     public ResultInfo findUserList() {
-        stringRedisTemplate.opsForValue().set("sprinboot-redis-messaage", "message", 10, TimeUnit.SECONDS);
         System.out.println("》》》8080");
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, userService.findList());
     }

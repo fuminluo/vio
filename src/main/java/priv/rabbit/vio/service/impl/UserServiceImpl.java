@@ -6,6 +6,7 @@ import com.github.pagehelper.PageInfo;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import priv.rabbit.vio.common.ResultInfo;
@@ -62,12 +63,12 @@ public class UserServiceImpl implements UserService {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, user);
     }
 
+
     @Override
     public PageInfo<User> findList() {
-        PageHelper.startPage(0, 3);
+        PageHelper.startPage(1, 1);
         List<User> list = userMapper.findList();
-
-        PageInfo<User> pageInfo = new PageInfo<User>(list);
+        PageInfo pageInfo = new PageInfo<User>(list);
         return pageInfo;
     }
 }
