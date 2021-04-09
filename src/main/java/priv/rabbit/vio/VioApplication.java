@@ -29,10 +29,10 @@ import java.util.Properties;
 
 @SpringBootApplication
 @MapperScan(basePackages = "priv.**.mapper")
-@EnableRedisHttpSession
+//@EnableRedisHttpSession
 @EnableFeignClients
 @EnableAsync
-@EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
+//@EnableAutoConfiguration(exclude = {MultipartAutoConfiguration.class})
 @EnableCaching
 public class VioApplication {
 

@@ -19,7 +19,7 @@ import org.springframework.data.redis.serializer.*;
 
 import java.util.concurrent.CountDownLatch;
 
-@Configuration
+//@Configuration
 public class RedisConfig {
     @Bean
     CountDownLatch latch() {
