@@ -1,6 +1,10 @@
 package priv.rabbit.vio;
 
 
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kie.api.KieBase;
@@ -22,8 +26,10 @@ import priv.rabbit.vio.entity.Department;
 import priv.rabbit.vio.entity.Employee;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.EmployeeMapper;
+import priv.rabbit.vio.mapper.UserMapper;
 
 import java.io.BufferedWriter;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -52,6 +58,32 @@ public class VioApplicationTests {
 
     @Autowired
     private KieBase kieBase;
+
+    /**
+     * 读取mybatis的配置文件，生成SqlSessionFactory
+     *
+     * @return
+     */
+    private static SqlSessionFactory getSessionFactory() {
+        SqlSessionFactory sessionFactory = null;
+        String resource = "mybatisConfig.xml";
+        try {
+            sessionFactory = new SqlSessionFactoryBuilder().build(Resources
+                    .getResourceAsReader(resource));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return sessionFactory;
+    }
+
+    @Test
+    public void findUserById() {
+        SqlSessionFactory sqlSessionFactory = getSessionFactory();
+        SqlSession sqlSession = sqlSessionFactory.openSession();
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        User user = userMapper.selectByPrimaryKey("abc");
+        System.out.println(user.getId() + " /  " + user.getId());
+    }
 
     @Test
     public void contextLoads() {
@@ -86,13 +118,13 @@ public class VioApplicationTests {
                         System.err.println("=============线程开启============" + Thread.currentThread().getName());
                         /*
                          * distributedLocker.lock(key,10L); //直接加锁，获取不到锁则一直等待获取锁
-						 * Thread.sleep(100); //获得锁之后可以进行相应的处理
-						 * System.err.println("======获得锁后进行相应的操作======"+Thread.
-						 * currentThread().getName());
-						 * distributedLocker.unlock(key); //解锁
-						 * System.err.println("============================="+
-						 * Thread.currentThread().getName());
-						 */
+                         * Thread.sleep(100); //获得锁之后可以进行相应的处理
+                         * System.err.println("======获得锁后进行相应的操作======"+Thread.
+                         * currentThread().getName());
+                         * distributedLocker.unlock(key); //解锁
+                         * System.err.println("============================="+
+                         * Thread.currentThread().getName());
+                         */
                         boolean isGetLock = distributedLocker.tryLock(key, TimeUnit.SECONDS, 5L, 10L); // 尝试获取锁，等待5秒，自己获得锁后一直不解锁则10秒后自动解锁
                         if (isGetLock) {
                             System.out.println("线程:" + Thread.currentThread().getName() + ",获取到了锁");

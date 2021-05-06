@@ -12,6 +12,7 @@ import org.springframework.scripting.support.ResourceScriptSource;
 import org.springframework.web.bind.annotation.*;
 import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.config.annotation.Encrypt;
+import priv.rabbit.vio.design.proxy.Subject;
 import priv.rabbit.vio.entity.User;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,12 +34,20 @@ public class RedisController {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @Autowired
+    private Subject subject;
+
 
     // redisTemplate.opsForValue();//操作字符串
     // redisTemplate.opsForHash();//操作hash
     // redisTemplate.opsForList();//操作list
     // redisTemplate.opsForSet();//操作set
     // redisTemplate.opsForZSet();//操作有序set
+
+    @GetMapping("/subject")
+    public String subject() {
+        return subject.sayHello();
+    }
 
 
     /**
@@ -143,6 +152,7 @@ public class RedisController {
         Map<String, String> resultMap = redisTemplate.opsForHash().entries("map1");
         System.out.println("resultMap:" + resultMap);
 
+
         List<String> reslutMapList = redisTemplate.opsForHash().values("map1");
         System.out.println("reslutMapList:" + reslutMapList);
 
@@ -189,13 +199,13 @@ public class RedisController {
 
         //查询list中指定范围的内容
         List<String> list = redisTemplate.opsForList().range("product:list", 0, -1);
-        System.out.println("查询list中指定范围的内容  "+list);
+        System.out.println("查询list中指定范围的内容  " + list);
 
         //修剪列表，使其只包含指定范围内的元素
         redisTemplate.opsForList().trim("product:list", 0, 2);
 
         //查询列表长度
-        System.out.println("查询列表长度  "+redisTemplate.opsForList().size("product:list"));
+        System.out.println("查询列表长度  " + redisTemplate.opsForList().size("product:list"));
 
         //弹出最左边元素
         redisTemplate.opsForList().leftPop("product:list");
