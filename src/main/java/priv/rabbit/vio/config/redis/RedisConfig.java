@@ -19,7 +19,7 @@ import org.springframework.data.redis.serializer.*;
 
 import java.util.concurrent.CountDownLatch;
 
-//@Configuration
+@Configuration
 public class RedisConfig {
     @Bean
     CountDownLatch latch() {
@@ -34,8 +34,8 @@ public class RedisConfig {
     public RedisTemplate<String, Object> redisTemplate(@Autowired RedisConnectionFactory factory) {
         RedisTemplate<String, Object> template = new RedisTemplate<>();
         template.setConnectionFactory(factory);
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer()); // GenericJackson2JsonRedisSerializer
+        template.setKeySerializer(new GenericJackson2JsonRedisSerializer());
+        template.setHashKeySerializer(new GenericJackson2JsonRedisSerializer()); // GenericJackson2JsonRedisSerializer
         template.setValueSerializer(new GenericJackson2JsonRedisSerializer());
         template.setHashValueSerializer(new GenericJackson2JsonRedisSerializer()); // GenericJackson2JsonRedisSerializer
         template.setEnableTransactionSupport(true);

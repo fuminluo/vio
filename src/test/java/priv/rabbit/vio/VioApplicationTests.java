@@ -1,6 +1,7 @@
 package priv.rabbit.vio;
 
 
+import org.apache.ibatis.executor.ReuseExecutor;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
@@ -76,13 +77,12 @@ public class VioApplicationTests {
         return sessionFactory;
     }
 
+
+
     @Test
     public void findUserById() {
-        SqlSessionFactory sqlSessionFactory = getSessionFactory();
-        SqlSession sqlSession = sqlSessionFactory.openSession();
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        User user = userMapper.selectByPrimaryKey("abc");
-        System.out.println(user.getId() + " /  " + user.getId());
+       // ReuseExecutor executor = new ReuseExecutor();
+       // executor.query()
     }
 
     @Test

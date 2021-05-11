@@ -14,14 +14,14 @@ public class DynamicProxyTest {
 
         AdminServiceInvocation adminServiceInvocation = new AdminServiceInvocation(adminService);
 
-        AdminService proxy = (AdminService) new AdminServiceDynamicProxy(adminService, adminServiceInvocation).getPersonProxy();
+        adminService = (AdminService) new AdminServiceDynamicProxy(adminService, adminServiceInvocation).getPersonProxy();
 
-        System.out.println("代理对象：" + proxy.getClass());
+        System.out.println("代理对象：" + adminService.getClass());
 
-        Object obj = proxy.find();
+        Object obj = adminService.find();
         System.out.println("find 返回对象：" + obj.getClass());
         System.out.println("----------------------------------");
-        proxy.update();
+        adminService.update();
 
         //方法二
         System.out.println("============ 方法二 ==============");

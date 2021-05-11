@@ -7,7 +7,7 @@ import priv.rabbit.vio.entity.User;
 
 public interface UserService {
 
-     ResultInfo<?> save(String username,String password);
+     ResultInfo<?> save(String username,String password,Integer size);
 
      User login(User user);
 

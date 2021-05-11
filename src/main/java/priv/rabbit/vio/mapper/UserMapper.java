@@ -1,6 +1,9 @@
 package priv.rabbit.vio.mapper;
 
 
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.cursor.Cursor;
 import org.mapstruct.Mapper;
 import priv.rabbit.vio.entity.User;
 
@@ -14,7 +17,9 @@ public interface UserMapper {
 
     int insertSelective(User record);
 
-    User selectByPrimaryKey(String userId);
+    int insertBatch(@Param("list") List<User> list);
+
+    User selectByPrimaryKey(Long userId);
 
     int updateByPrimaryKeySelective(User record);
 
@@ -25,4 +30,8 @@ public interface UserMapper {
     String getPassword(String username);
 
     List<User> findList();
+
+    List<String> findNames();
+
+    int findCount();
 }

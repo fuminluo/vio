@@ -2,8 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="priv.rabbit.vio.mapper.UserMapper">
     <resultMap id="BaseResultMap" type="priv.rabbit.vio.entity.User">
-        <id column="id" jdbcType="BIGINT" property="id"/>
-        <result column="user_no" jdbcType="VARCHAR" property="userNo"/>
+        <id column="user_id" jdbcType="BIGINT" property="userId"/>
         <result column="token" jdbcType="VARCHAR" property="token"/>
         <result column="role_id" jdbcType="INTEGER" property="roleId"/>
         <result column="username" jdbcType="VARCHAR" property="username"/>
@@ -18,42 +17,39 @@
         <result column="state" jdbcType="INTEGER" property="state"/>
     </resultMap>
     <sql id="Base_Column_List">
-        id, user_no, token, role_id, username, password, nickname, sex, photo, phone, parent_id,
+        user_id, token, role_id, username, password, nickname, photo, phone, parent_id,
         create_time, update_time, state
     </sql>
     <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
-        select
-        <include refid="Base_Column_List"/>
-        from user
-        where id = #{id,jdbcType=BIGINT}
+        select * from user where user_id = #{userId,jdbcType=BIGINT}
     </select>
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
         delete from user
-        where id = #{id,jdbcType=BIGINT}
+        where user_id = #{userId,jdbcType=BIGINT}
     </delete>
     <insert id="insert" parameterType="priv.rabbit.vio.entity.User">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
             SELECT LAST_INSERT_ID()
         </selectKey>
-        insert into user (user_no, token, role_id,
+        insert into user (user_id, token, role_id,
         username, password, nickname,
         sex, photo, phone,
         parent_id, create_time, update_time,
         state)
-        values (#{userNo,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR}, #{roleId,jdbcType=INTEGER},
+        values (#{userId,jdbcType=VARCHAR}, #{token,jdbcType=VARCHAR}, #{roleId,jdbcType=INTEGER},
         #{username,jdbcType=VARCHAR}, #{password,jdbcType=VARCHAR}, #{nickname,jdbcType=VARCHAR},
         #{sex,jdbcType=INTEGER}, #{photo,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR},
         #{parentId,jdbcType=VARCHAR}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP},
         #{state,jdbcType=INTEGER})
     </insert>
     <insert id="insertSelective" parameterType="priv.rabbit.vio.entity.User">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+        <selectKey keyProperty="userId" order="AFTER" resultType="java.lang.Long">
             SELECT LAST_INSERT_ID()
         </selectKey>
         insert into user
         <trim prefix="(" suffix=")" suffixOverrides=",">
-            <if test="userNo != null">
-                user_no,
+            <if test="userId != null">
+                user_id,
             </if>
             <if test="token != null">
                 token,
@@ -93,8 +89,8 @@
             </if>
         </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
-            <if test="userNo != null">
-                #{userNo,jdbcType=VARCHAR},
+            <if test="userId != null">
+                #{userId,jdbcType=VARCHAR},
             </if>
             <if test="token != null">
                 #{token,jdbcType=VARCHAR},
@@ -134,6 +130,7 @@
             </if>
         </trim>
     </insert>
+
     <update id="updateByPrimaryKeySelective" parameterType="priv.rabbit.vio.entity.User">
         update user
         <set>
@@ -233,10 +230,26 @@
     </select>
 
     <select id="getPassword" parameterType="java.lang.String" resultType="java.lang.String">
-            SELECT password FROM user WHERE username = #{username}
+        SELECT password FROM user WHERE username = #{username}
     </select>
 
     <select id="findList" resultMap="BaseResultMap">
-        SELECT  *  FROM user
+        SELECT * FROM user
     </select>
+    <select id="findNames" resultType="java.lang.String">
+        SELECT username FROM user
+    </select>
+    <select id="findCount" resultType="java.lang.Integer">
+        SELECT count(*) FROM user
+    </select>
+
+    <insert id="insertBatch">
+        INSERT INTO user
+        (username, password,state)
+        VALUES
+        <foreach collection="list" item="user" separator=",">
+            (#{user.username}, #{user.password}, #{user.state})
+        </foreach>
+    </insert>
+
 </mapper>

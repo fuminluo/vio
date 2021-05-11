@@ -18,8 +18,8 @@ import javax.servlet.http.HttpServletRequest;
  * @author LuoFuMin
  * @data 2018/8/7
  */
-@Aspect
-@Component
+//@Aspect
+//@Component
 public class ControllerLogAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(ControllerLogAspect.class);
 

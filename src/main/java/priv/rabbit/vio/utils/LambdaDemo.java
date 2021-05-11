@@ -1,5 +1,9 @@
 package priv.rabbit.vio.utils;
 
+import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.session.Configuration;
+import priv.rabbit.vio.entity.Department;
+import priv.rabbit.vio.entity.Employee;
 import priv.rabbit.vio.entity.User;
 
 import java.util.*;
@@ -63,7 +67,21 @@ public class LambdaDemo {
         System.out.println(count);// 4
 
         List<User> userList = new ArrayList<>();
-        Map<Long, String> map = userList.stream().collect(Collectors.toMap(User::getId, User::getNickname));
+        Map<Long, String> map = userList.stream().collect(Collectors.toMap(User::getUserId, User::getNickname));
+
+        Configuration configuration = new Configuration();
+        Employee employee = new Employee();
+        Department department = new Department();
+        department.setId(1);
+        Employee employee2 = new Employee();employee2.setEmail("1414");
+
+        department.setEmps(Arrays.asList(employee2));
+        employee.setDept(department);
+
+        MetaObject metaObject = configuration.newMetaObject(employee);
+
+        System.out.println(metaObject.getValue("dept.emps[0].email"));
+
 
     }
 }

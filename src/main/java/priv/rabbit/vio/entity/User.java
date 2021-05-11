@@ -9,9 +9,7 @@ public class User implements Serializable {
 
     private static final long serialVersionUID = -4582990628611921616L;
 
-    private Long id;
-
-    private String userNo;
+    private Long userId;
 
     private String token;
 
@@ -44,32 +42,13 @@ public class User implements Serializable {
     public User() {
     }
 
-    public User(String userNo, String username, String password) {
-        this.userNo = userNo;
-        this.username = username;
-        this.password = password;
+
+    public Long getUserId() {
+        return userId;
     }
 
-    public User(Integer roleId, String username, String password) {
-        this.roleId = roleId;
-        this.username = username;
-        this.password = password;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getUserNo() {
-        return userNo;
-    }
-
-    public void setUserNo(String userNo) {
-        this.userNo = userNo;
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 
     public String getToken() {

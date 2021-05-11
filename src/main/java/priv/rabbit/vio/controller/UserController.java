@@ -1,8 +1,10 @@
 package priv.rabbit.vio.controller;
 
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,22 +33,35 @@ public class UserController {
     private StringRedisTemplate stringRedisTemplate;
 
     @Autowired
+    private RedisTemplate redisTemplate;
+
+    @Autowired
     private UserMapper userMapper;
 
 
     @ApiOperation(value = "获取用户列表", notes = "获取用户列表")
     @GetMapping("/v1/app/users")
     public ResultInfo findUserList() {
-        System.out.println("》》》8080");
-        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, userService.findList());
+        long start = System.currentTimeMillis();
+        PageInfo<User> list = userService.findList();
+        System.out.println("===== 耗时 : " + (System.currentTimeMillis() - start) + " ms");
+        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, list.getList());
+    }
+
+    @ApiOperation(value = "获取用户列表", notes = "获取用户列表")
+    @GetMapping("/v1/app/user")
+    public ResultInfo findUser(Long userId) {
+        //userMapper.findNames();
+        //userMapper.findCount();
+        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, userMapper.selectByPrimaryKey(userId));
     }
 
 
     @CustomAnnotation
     @ApiOperation(value = "保存", notes = "保存")
     @PostMapping("/v1/app/user/create")
-    public ResultInfo save(@RequestParam String username, @RequestParam String password) {
-        return userService.save(username, password);
+    public ResultInfo save(@RequestParam String username, @RequestParam String password, @RequestParam Integer size) {
+        return userService.save(username, password, size);
     }
 
     @Decrypt

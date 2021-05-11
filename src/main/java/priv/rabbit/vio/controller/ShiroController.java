@@ -86,7 +86,7 @@ public class ShiroController {
         user.setUsername(username);
         user = userMapper.findOneByParam(user);
 
-        model.addAttribute("user_no", user.getUserNo());
+        model.addAttribute("user_no", user.getUserId());
         model.addAttribute("user", user);
         return "index";
     }

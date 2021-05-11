@@ -1,6 +1,9 @@
 package priv.rabbit.vio.controller;
 
+import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
+import org.apache.ibatis.binding.MapperRegistry;
+import org.apache.ibatis.session.Configuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,10 +17,12 @@ import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.config.annotation.Encrypt;
 import priv.rabbit.vio.design.proxy.Subject;
 import priv.rabbit.vio.entity.User;
+import priv.rabbit.vio.service.UserService;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * @author LuoFuMin
@@ -158,7 +163,6 @@ public class RedisController {
 
         Set<String> resultMapSet = redisTemplate.opsForHash().keys("map1");
         System.out.println("resultMapSet:" + resultMapSet);
-
         String value = (String) redisTemplate.opsForHash().get("map1", "key1");
         System.out.println("value:" + value);
     }
@@ -228,11 +232,9 @@ public class RedisController {
         List<User> userList = new ArrayList<User>();
 
         User user = new User();
-        user.setId((long) 1);
         user.setUsername("xiao");
 
         User user2 = new User();
-        user2.setId((long) 2);
         user2.setUsername("daopao");
 
         userArrayList.add(user);
@@ -242,7 +244,6 @@ public class RedisController {
         // Object object = redisTemplate.opsForValue().get("studentList");
 
         User user3 = new User();
-        user3.setId((long) 3);
         user3.setUsername("ccc");
         userList.add(user3);
 
@@ -255,6 +256,21 @@ public class RedisController {
             }
         }
 
+    }
+
+    @Autowired
+    UserService userService;
+
+    @GetMapping(value = "/insertRedis")
+    public ResultInfo insertRedis(HttpServletRequest request) {
+        List<User> list = userService.findList().getList();
+        Map<Long, String> passwordMap = list.stream().collect(Collectors.toMap(User::getUserId, User::getPassword));
+        Map<Long, String> usernameMap = list.stream().collect(Collectors.toMap(User::getUserId, User::getUsername));
+        long start = System.currentTimeMillis();
+        redisTemplate.opsForHash().putAll("user:id-password", passwordMap);
+        redisTemplate.opsForHash().putAll("user:id-username", usernameMap);
+        System.out.println("===== 耗时 : " + (System.currentTimeMillis() - start)+" ms");
+        return ResultInfo.OK();
     }
 
 
