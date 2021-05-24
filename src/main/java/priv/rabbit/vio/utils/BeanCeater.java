@@ -38,6 +38,7 @@ public class BeanCeater {
         System.out.println("===getPackage==="+ c.getPackage());
 
         System.out.println("Set values");
+
         setValue(stu, "id", 123);
         setValue(stu, "name", "454");
         setValue(stu, "address", "789");

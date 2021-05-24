@@ -35,6 +35,8 @@ public class User implements Serializable {
 
     private Integer state;
 
+    private Integer age;
+
     public static long getSerialVersionUID() {
         return serialVersionUID;
     }
@@ -145,5 +147,13 @@ public class User implements Serializable {
 
     public void setState(Integer state) {
         this.state = state;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }

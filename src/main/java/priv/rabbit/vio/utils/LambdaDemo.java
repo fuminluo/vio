@@ -68,19 +68,9 @@ public class LambdaDemo {
 
         List<User> userList = new ArrayList<>();
         Map<Long, String> map = userList.stream().collect(Collectors.toMap(User::getUserId, User::getNickname));
+        Map<Long, User> Usermap = userList.stream().collect(Collectors.toMap(User::getUserId, v -> v, (k1, k2) -> k1));
+        Map<Long, List<User>> UserList = userList.stream().collect(Collectors.groupingBy(User::getUserId));
 
-        Configuration configuration = new Configuration();
-        Employee employee = new Employee();
-        Department department = new Department();
-        department.setId(1);
-        Employee employee2 = new Employee();employee2.setEmail("1414");
-
-        department.setEmps(Arrays.asList(employee2));
-        employee.setDept(department);
-
-        MetaObject metaObject = configuration.newMetaObject(employee);
-
-        System.out.println(metaObject.getValue("dept.emps[0].email"));
 
 
     }

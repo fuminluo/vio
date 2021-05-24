@@ -239,7 +239,8 @@
     <select id="findNames" resultType="java.lang.String">
         SELECT username FROM user
     </select>
-    <select id="findCount" resultType="java.lang.Integer">
+
+    <select id="findCount" resultType="java.lang.Integer" fetchSize="5000">
         SELECT count(*) FROM user
     </select>
 
