@@ -42,7 +42,7 @@ import java.util.Properties;
 public class VioApplication {
 
     //配置mybatis的分页插件pageHelper
-    @Bean
+    /*@Bean
     public PageHelper pageHelper() {
         PageHelper pageHelper = new PageHelper();
         Properties properties = new Properties();
@@ -52,7 +52,7 @@ public class VioApplication {
         properties.setProperty("dialect", "mysql");    //配置mysql数据库的方言
         pageHelper.setProperties(properties);
         return pageHelper;
-    }
+    }*/
 
 
     private CorsConfiguration buildConfig() {

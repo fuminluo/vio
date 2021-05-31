@@ -234,7 +234,7 @@
     </select>
 
     <select id="findList" resultMap="BaseResultMap">
-        SELECT * FROM user
+        SELECT * FROM ( SELECT * FROM user) t limit 1,200
     </select>
     <select id="findNames" resultType="java.lang.String">
         SELECT username FROM user

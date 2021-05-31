@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import priv.rabbit.vio.common.ResultInfo;
 import priv.rabbit.vio.config.annotation.BussAnnotation;
+import priv.rabbit.vio.dto.DataPermission;
 import priv.rabbit.vio.dto.user.LoginRequest;
 import priv.rabbit.vio.entity.User;
 import priv.rabbit.vio.mapper.UserMapper;
@@ -84,6 +85,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageInfo<User> findList() {
         PageHelper.startPage(1, 5000);
+        new DataPermission("user_Id < 10");
         List<User> list = userMapper.findList();
         PageInfo pageInfo = new PageInfo<User>(list);
         return pageInfo;

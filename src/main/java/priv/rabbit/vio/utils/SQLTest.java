@@ -8,6 +8,7 @@ import com.alibaba.druid.sql.dialect.oracle.visitor.OracleSchemaStatVisitor;
 import com.alibaba.druid.sql.parser.SQLStatementParser;
 import com.alibaba.druid.sql.visitor.SchemaStatVisitor;
 import net.sf.jsqlparser.JSQLParserException;
+import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.ExpressionVisitorAdapter;
 import net.sf.jsqlparser.expression.StringValue;
@@ -21,9 +22,11 @@ import net.sf.jsqlparser.util.AddAliasesVisitor;
 import net.sf.jsqlparser.util.SelectUtils;
 import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
 import net.sf.jsqlparser.util.deparser.SelectDeParser;
+import org.springframework.util.CollectionUtils;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public class SQLTest {
 
@@ -43,7 +46,7 @@ public class SQLTest {
         System.out.println(visitor.getColumns());
         System.out.println(visitor.getOrderByColumns());*/
 
-        String sql = "SELECT * FROM  (SELECT Rownum rn , t.rowid rid ,t.*,c.* FROM  t_valsetruleinputitem_aa t ,t_cloumn c WHERE a=b AND ROWNUM < 10 and t.id in (select id from t_cloumn where ROWNUM < 10))  tt WHERE tt.rn >  1";
+        String sql = "SELECT * FROM  (SELECT Rownum rn , t.rowid rid ,t.*,c.* FROM  t_valsetruleinputitem_aa t ,t_cloumn c WHERE c.fcolumnno = t.fcolumnno AND ROWNUM < 10 and t.id in (select id from t_cloumn where ROWNUM < 10))  tt WHERE tt.rn >  1";
 
         //String sql = "select rownum from ( select t1 from table1 t1 union all select t2.b,t3.c from table2 t2,table3 t3 where t2.b = t3.c) a where a.id = ?";
 
@@ -56,7 +59,7 @@ public class SQLTest {
         PlainSelect plainSelect = (PlainSelect) selectBody;
 
 
-        plainSelect(plainSelect);
+        fromItem2(plainSelect.getFromItem());
 
 
         System.out.println(select.toString());
@@ -69,12 +72,50 @@ public class SQLTest {
 
     }
 
+    /**
+     * Oracle 写法
+     *
+     * @param plainSelect
+     * @return
+     */
     public static boolean plainSelect(PlainSelect plainSelect) {
         if (!fromItem(plainSelect.getFromItem())) {
             if (extracted(plainSelect)) return true;
         }
         return true;
     }
+
+    public static void fromItem2(FromItem fromItem) {
+        String aliasName = Optional.ofNullable(fromItem).map(FromItem::getAlias).map(Alias::getName).orElse("");
+        if ("tt".equals(aliasName)) {
+            System.out.println("aliasName : " + aliasName);
+        }
+        if (fromItem instanceof SubSelect) {
+            SubSelect subSelect = (SubSelect) fromItem;
+            if (null != subSelect.getSelectBody()) {
+                PlainSelect plainSelect = (PlainSelect) subSelect.getSelectBody();
+                aliasName = Optional.ofNullable(plainSelect).map(PlainSelect::getFromItem).map(FromItem::getAlias).map(Alias::getName).orElse("");
+                if ("tt".equals(aliasName)) {
+                    System.out.println("aliasName : " + aliasName);
+                }
+                if (!CollectionUtils.isEmpty(plainSelect.getJoins())) {
+                    Optional<Join> join = plainSelect.getJoins().stream().filter(var -> "c".equals(Optional.ofNullable(var).map(Join::getRightItem).map(FromItem::getAlias).map(Alias::getName).orElse(""))).findFirst();
+                    System.out.println("==join=="+join.get());
+                    Expression where = null;
+                    try {
+                        String whereSql = plainSelect.getWhere() != null ? plainSelect.getWhere().toString() + " AND userId = 2" : "  userId = 2";
+                        where = CCJSqlParserUtil.parseCondExpression(whereSql);
+                    } catch (JSQLParserException e) {
+                        e.printStackTrace();
+                    }
+                    plainSelect.setWhere(where);
+
+                }
+
+            }
+        }
+    }
+
 
     public static boolean fromItem(FromItem fromItem) {
 
