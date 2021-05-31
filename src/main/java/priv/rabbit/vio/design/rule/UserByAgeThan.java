@@ -1,8 +1,7 @@
 package priv.rabbit.vio.design.rule;
 
-import priv.rabbit.vio.entity.User;
 
-public class UserByAgeThan extends CompositeSpecification {
+public class UserByAgeThan<T> extends CompositeSpecification<T> {
 
     private int age;
 
@@ -11,8 +10,9 @@ public class UserByAgeThan extends CompositeSpecification {
     }
 
     @Override
-    public boolean isSatisfiedBy(User user) {
-        return user.getAge() > age;
+    public boolean isSatisfiedBy(T data) {
+        // return user.getAge() > age;
+        return true;
     }
 
 }

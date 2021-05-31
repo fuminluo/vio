@@ -1,8 +1,7 @@
 package priv.rabbit.vio.design.rule;
 
-import priv.rabbit.vio.entity.User;
 
-public class NotSpecification  extends CompositeSpecification {
+public class NotSpecification<T> extends CompositeSpecification<T> {
 
     private IUserSpecification spec;
 
@@ -11,8 +10,8 @@ public class NotSpecification  extends CompositeSpecification {
     }
 
     @Override
-    public boolean isSatisfiedBy(User user) {
-        return !spec.isSatisfiedBy(user);
+    public boolean isSatisfiedBy(T data) throws NoSuchFieldException, IllegalAccessException {
+        return !spec.isSatisfiedBy(data);
     }
 
 }

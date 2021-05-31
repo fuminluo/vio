@@ -66,6 +66,7 @@ public class LambdaDemo {
         System.out.println(cc);// FALSE
         System.out.println(count);// 4
 
+
         List<User> userList = new ArrayList<>();
         Map<Long, String> map = userList.stream().collect(Collectors.toMap(User::getUserId, User::getNickname));
         Map<Long, User> Usermap = userList.stream().collect(Collectors.toMap(User::getUserId, v -> v, (k1, k2) -> k1));

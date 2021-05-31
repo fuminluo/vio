@@ -1,8 +1,7 @@
 package priv.rabbit.vio.design.rule;
 
-import priv.rabbit.vio.entity.User;
 
-public class AndSpecification extends CompositeSpecification {
+public class AndSpecification<T> extends CompositeSpecification<T> {
 
     private IUserSpecification left;
     private IUserSpecification right;
@@ -13,7 +12,7 @@ public class AndSpecification extends CompositeSpecification {
     }
 
     @Override
-    public boolean isSatisfiedBy(User user) {
-        return left.isSatisfiedBy(user) && right.isSatisfiedBy(user);
+    public boolean isSatisfiedBy(T data) throws NoSuchFieldException, IllegalAccessException {
+        return left.isSatisfiedBy(data) && right.isSatisfiedBy(data);
     }
 }

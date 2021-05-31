@@ -1,10 +1,9 @@
 package priv.rabbit.vio.design.rule;
 
-import priv.rabbit.vio.entity.User;
 
-public interface IUserSpecification {
+public interface IUserSpecification<T> {
     // 候选者是否满足要求
-    boolean isSatisfiedBy(User user);
+    boolean isSatisfiedBy(T data) throws NoSuchFieldException, IllegalAccessException;
 
     // AND 操作
     public IUserSpecification and(IUserSpecification spec);

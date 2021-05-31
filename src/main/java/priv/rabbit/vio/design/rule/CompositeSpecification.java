@@ -1,11 +1,10 @@
 package priv.rabbit.vio.design.rule;
 
-import priv.rabbit.vio.entity.User;
 
-public abstract class CompositeSpecification implements IUserSpecification {
+public abstract class CompositeSpecification<T> implements IUserSpecification<T> {
 
     // 是否满足要求由子类去实现
-    public abstract boolean isSatisfiedBy(User user);
+    public abstract boolean isSatisfiedBy(T data) throws NoSuchFieldException, IllegalAccessException;
 
     @Override
     public IUserSpecification and(IUserSpecification spec) {

@@ -8,11 +8,24 @@ import org.springframework.context.annotation.Configuration;
  * @Description
  * @Date 2019/11/6 23:06
  **/
+
 @Configuration
 public class MybatisInterceptorConfig {
 
-    @Bean
-    MybatisInterceptor mybatisInterceptor(){
+ /*   @Bean
+    MybatisInterceptor mybatisInterceptor() {
         return new MybatisInterceptor();
     }
+
+    @Bean
+    MybatisSqlInterceptor MybatisSqlInterceptor() {
+        return new MybatisSqlInterceptor();
+    }*/
+
+    @Bean
+    MybatisAuthorityInterceptor MybatisAuthorityInterceptor() {
+        return new MybatisAuthorityInterceptor();
+    }
+
+
 }

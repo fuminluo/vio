@@ -56,6 +56,11 @@ public class UserController {
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, userMapper.selectByPrimaryKey(userId));
     }
 
+    @ApiOperation(value = "获取用户列表", notes = "获取用户列表")
+    @GetMapping("/v1/app/user/name")
+    public ResultInfo findUser(String name) {
+        return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS, userMapper.findByName(name,"menuId123"));
+    }
 
     @CustomAnnotation
     @ApiOperation(value = "保存", notes = "保存")
