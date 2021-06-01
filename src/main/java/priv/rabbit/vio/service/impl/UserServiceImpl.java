@@ -1,6 +1,7 @@
 package priv.rabbit.vio.service.impl;
 
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.jsonwebtoken.Jwts;
@@ -84,8 +85,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public PageInfo<User> findList() {
-        PageHelper.startPage(1, 5000);
-        new DataPermission("user_Id < 10");
+        Page page = PageHelper.startPage(10, 1);
+        new DataPermission("user_Id < 10", true);
         List<User> list = userMapper.findList();
         PageInfo pageInfo = new PageInfo<User>(list);
         return pageInfo;

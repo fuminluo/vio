@@ -24,7 +24,6 @@ import priv.rabbit.vio.config.annotation.SQLPermission;
 import priv.rabbit.vio.dto.DataPermission;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,11 +35,7 @@ public class MybatisAuthorityInterceptor implements Interceptor {
 
     public static final ThreadLocal<DataPermission> LOCAL_DATA_PERMISSION = new ThreadLocal();
 
-    private static final String SUFFIX_COUNT = "_COUNT";
-
     private static final Logger logger = LoggerFactory.getLogger(MybatisAuthorityInterceptor.class);
-
-    private static final Map<String, SQLPermission> SQL_PERMISSION_MAPPER = new HashMap();
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -74,7 +69,19 @@ public class MybatisAuthorityInterceptor implements Interceptor {
         /*Configuration configuration = mappedStatement.getConfiguration();
         ComboPooledDataSource dataSource = (ComboPooledDataSource)configuration.getEnvironment().getDataSource();
         dataSource.getJdbcUrl();*/
-        return invocation.proceed();
+        try {
+            return invocation.proceed();
+        } finally {
+            if (LOCAL_DATA_PERMISSION.get().getEnPagePlug()) {
+                if (LOCAL_DATA_PERMISSION.get().getAtomicInteger().addAndGet(1) == 2) {
+                    logger.info("清除本地线程变量");
+                    LOCAL_DATA_PERMISSION.remove();
+                }
+            } else {
+                LOCAL_DATA_PERMISSION.remove();
+            }
+
+        }
     }
 
     @Override
