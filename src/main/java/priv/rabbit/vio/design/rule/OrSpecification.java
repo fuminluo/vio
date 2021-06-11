@@ -1,18 +1,19 @@
 package priv.rabbit.vio.design.rule;
 
 
-public class OrSpecification<T> extends CompositeSpecification<T> {
 
-    private IUserSpecification left;
-    private IUserSpecification right;
+public class OrSpecification extends CompositeSpecification {
 
-    public OrSpecification(IUserSpecification left, IUserSpecification right) {
+    private ISpecification left;
+    private ISpecification right;
+
+    public OrSpecification(ISpecification left, ISpecification right) {
         this.left = left;
         this.right = right;
     }
 
     @Override
-    public boolean isSatisfiedBy(T data) throws NoSuchFieldException, IllegalAccessException {
+    public boolean isSatisfiedBy(Object data){
         return left.isSatisfiedBy(data) || right.isSatisfiedBy(data);
     }
 

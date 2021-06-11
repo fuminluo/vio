@@ -1,18 +1,19 @@
 package priv.rabbit.vio.design.rule;
 
 
-public class AndSpecification<T> extends CompositeSpecification<T> {
 
-    private IUserSpecification left;
-    private IUserSpecification right;
+public class AndSpecification extends CompositeSpecification {
 
-    public AndSpecification(IUserSpecification left, IUserSpecification right) {
+    private ISpecification left;
+    private ISpecification right;
+
+    public AndSpecification(ISpecification left, ISpecification right) {
         this.left = left;
         this.right = right;
     }
 
     @Override
-    public boolean isSatisfiedBy(T data) throws NoSuchFieldException, IllegalAccessException {
+    public boolean isSatisfiedBy(Object data) {
         return left.isSatisfiedBy(data) && right.isSatisfiedBy(data);
     }
 }
