@@ -58,12 +58,8 @@ public class MybatisAuthorityInterceptor implements Interceptor {
             //SQLPermission sqlPermission = getSqlPermission(mappedStatement.getId());
             //获取到原始sql语句
             String sql = handlerSql(boundSql.getSql());
-            logger.info("sql : {} ", sql);
-
-            //通过反射修改sql语句
-            Field field = boundSql.getClass().getDeclaredField("sql");
-            field.setAccessible(true);
-            field.set(boundSql, sql);
+            logger.info("MybatisAuthorityInterceptor -- sql : {} ", sql);
+            SystemMetaObject.forObject(boundSql).setValue("sql", sql);
         }
         //数据库连接信息
         /*Configuration configuration = mappedStatement.getConfiguration();
@@ -102,6 +98,7 @@ public class MybatisAuthorityInterceptor implements Interceptor {
             stmt = CCJSqlParserUtil.parse(sql);
         } catch (JSQLParserException e) {
             e.printStackTrace();
+            return sql;
         }
         Select select = (Select) stmt;
         SelectBody selectBody = select.getSelectBody();
