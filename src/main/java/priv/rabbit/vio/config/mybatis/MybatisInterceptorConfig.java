@@ -22,10 +22,10 @@ public class MybatisInterceptorConfig {
         return new MybatisSqlInterceptor();
     }*/
 
-    @Bean
+  /*  @Bean
     MybatisAuthorityInterceptor MybatisAuthorityInterceptor() {
         return new MybatisAuthorityInterceptor();
     }
-
+*/
 
 }

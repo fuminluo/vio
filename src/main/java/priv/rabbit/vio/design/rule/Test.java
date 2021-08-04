@@ -7,18 +7,24 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class Test {
     public static void main(String[] args) {
 
         new EqualRule("username", () -> {
+            String abc = "";
             return "";
         });
+
         ISpecification spec = new EqualRule("username", "小明");
         spec = spec.and(new EqualRule("nickname", "nickname"));
         spec = spec.and(new NumberBetweenRule("age", 1, 20));
         spec = spec.or(new GreaterThanRule("age", 9));
+
+
         test(spec);
+
     }
 
     public static void test(final ISpecification spec) {
@@ -26,6 +32,10 @@ public class Test {
         user1.setAge(0);
         user1.setNickname("nickname");
         user1.setUsername("小明");
+
+        new EqualRule("username", () -> {
+            return user1;
+        });
 
         User user2 = new User();
         user2.setAge(30);
@@ -43,6 +53,8 @@ public class Test {
                 consumer.accept(var);
             }
         });
+
+        Stream stream = list.stream();
 
         list = list.stream().filter(var -> {
             boolean isSatisfiedBy = false;

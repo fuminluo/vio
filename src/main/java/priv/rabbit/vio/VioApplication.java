@@ -11,6 +11,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -45,12 +46,12 @@ public class VioApplication {
     @Bean
     public PageHelper pageHelper() {
         PageHelper pageHelper = new PageHelper();
-        /*Properties properties = new Properties();
+        Properties properties = new Properties();
         properties.setProperty("offsetAsPageNum", "true");
         properties.setProperty("rowBoundsWithCount", "true");
         properties.setProperty("reasonable", "true");
         properties.setProperty("dialect", "mysql");    //配置mysql数据库的方言
-        pageHelper.setProperties(properties);*/
+        pageHelper.setProperties(properties);
         return pageHelper;
     }
 
@@ -66,11 +67,11 @@ public class VioApplication {
 
     @Bean
     public CorsFilter corsFilter() {
-        System.out.println("=============== 设置跨域过滤器 ================");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", buildConfig());
         return new CorsFilter(source);
     }
+
 
     public static void main(String[] args) {
         SpringApplication.run(VioApplication.class, args);

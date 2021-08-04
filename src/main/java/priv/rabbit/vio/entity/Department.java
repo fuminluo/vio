@@ -13,6 +13,8 @@ public class  Department {
     private String departmentName;
     private List<Employee> emps;
 
+    List<User> userList;
+
 
 
     public List<Employee> getEmps() {
@@ -33,6 +35,15 @@ public class  Department {
     public void setDepartmentName(String departmentName) {
         this.departmentName = departmentName;
     }
+
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
+    }
+
     @Override
     public String toString() {
         return "Department [id=" + id + ", departmentName=" + departmentName + "]";

@@ -1,5 +1,7 @@
 package priv.rabbit.vio.entity;
 
+import java.util.List;
+
 /**
  * @Author administered
  * @Description
@@ -11,6 +13,8 @@ public class Employee {
     private String email;
     private String gender;
     private Department dept;
+
+    List<User> userList;
 
     public Employee() {
         super();
@@ -77,4 +81,11 @@ public class Employee {
         this.gender = gender;
     }
 
+    public List<User> getUserList() {
+        return userList;
+    }
+
+    public void setUserList(List<User> userList) {
+        this.userList = userList;
+    }
 }

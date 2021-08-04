@@ -1,6 +1,7 @@
 package priv.rabbit.vio.config.mybatis;
 
 import com.alibaba.fastjson.JSON;
+import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.expression.Alias;
 import net.sf.jsqlparser.expression.Expression;
@@ -13,183 +14,210 @@ import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.mapping.MappedStatement;
 import org.apache.ibatis.mapping.SqlCommandType;
+import org.apache.ibatis.mapping.StatementType;
 import org.apache.ibatis.plugin.*;
-import org.apache.ibatis.reflection.DefaultReflectorFactory;
 import org.apache.ibatis.reflection.MetaObject;
 import org.apache.ibatis.reflection.SystemMetaObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.util.CollectionUtils;
-import priv.rabbit.vio.config.annotation.SQLPermission;
-import priv.rabbit.vio.dto.DataPermission;
 
-import java.lang.reflect.Field;
 import java.sql.Connection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
 
+@Slf4j
 @Intercepts({@Signature(type = StatementHandler.class, method = "prepare", args = {Connection.class, Integer.class})})
 public class MybatisAuthorityInterceptor implements Interceptor {
 
-    public static final ThreadLocal<DataPermission> LOCAL_DATA_PERMISSION = new ThreadLocal();
-
-    private static final Logger logger = LoggerFactory.getLogger(MybatisAuthorityInterceptor.class);
+    protected static final ThreadLocal<SqlHelperDTO> LOCAL_DATA = new ThreadLocal();
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
-        StatementHandler statementHandler = (StatementHandler) invocation.getTarget();
-        //通过MetaObject优雅访问对象的属性，这里是访问statementHandler的属性;：MetaObject是Mybatis提供的一个用于方便、
-        //优雅访问对象属性的对象，通过它可以简化代码、不需要try/catch各种reflect异常，同时它支持对JavaBean、Collection、Map三种类型对象的操作。
-        MetaObject metaObject = MetaObject
-                .forObject(statementHandler, SystemMetaObject.DEFAULT_OBJECT_FACTORY, SystemMetaObject.DEFAULT_OBJECT_WRAPPER_FACTORY,
-                        new DefaultReflectorFactory());
-        //先拦截到RoutingStatementHandler，里面有个StatementHandler类型的delegate变量，其实现类是BaseStatementHandler，然后就到BaseStatementHandler的成员变量mappedStatement
-        MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
-
-        //sql语句类型 select、delete、insert、update
-        if (SqlCommandType.SELECT.equals(mappedStatement.getSqlCommandType())) {
-            BoundSql boundSql = statementHandler.getBoundSql();
-            //入参对象
-            Object param = boundSql.getParameterObject();
-            logger.info("入参 param : {}", JSON.toJSON(param));
-            //id为执行的mapper方法的全路径名，如com.uv.dao.UserMapper.insertUser
-            //SQLPermission sqlPermission = getSqlPermission(mappedStatement.getId());
-            //获取到原始sql语句
-            String sql = handlerSql(boundSql.getSql());
-            logger.info("MybatisAuthorityInterceptor -- sql : {} ", sql);
-            SystemMetaObject.forObject(boundSql).setValue("sql", sql);
-        }
-        //数据库连接信息
-        /*Configuration configuration = mappedStatement.getConfiguration();
-        ComboPooledDataSource dataSource = (ComboPooledDataSource)configuration.getEnvironment().getDataSource();
-        dataSource.getJdbcUrl();*/
-        try {
+        if (LOCAL_DATA.get() == null || StringUtils.isBlank(LOCAL_DATA.get().getWhereSql())) {
             return invocation.proceed();
-        } finally {
-            if (LOCAL_DATA_PERMISSION.get().getEnPagePlug()) {
-                if (LOCAL_DATA_PERMISSION.get().getAtomicInteger().addAndGet(1) == 2) {
-                    logger.info("清除本地线程变量");
-                    LOCAL_DATA_PERMISSION.remove();
-                }
-            } else {
-                LOCAL_DATA_PERMISSION.remove();
-            }
-
         }
+        if (!LOCAL_DATA.get().getIsLast()) {
+            if (StringUtils.isBlank(LOCAL_DATA.get().getAlias()) && StringUtils.isBlank(LOCAL_DATA.get().getTableName())) {
+                return invocation.proceed();
+            }
+        }
+        try {
+            StatementHandler statementHandler = PluginUtils.realTarget(invocation.getTarget());
+            MetaObject metaObject = SystemMetaObject.forObject(statementHandler);
+            MappedStatement mappedStatement = (MappedStatement) metaObject.getValue("delegate.mappedStatement");
+            //只对查询做处理
+            if (SqlCommandType.SELECT == mappedStatement.getSqlCommandType() && StatementType.CALLABLE != mappedStatement.getStatementType()) {
+                BoundSql boundSql = (BoundSql) metaObject.getValue("delegate.boundSql");
+                String sql = handlerSql(boundSql.getSql());
+                SystemMetaObject.forObject(boundSql).setValue("sql", sql);
+            }
+            return invocation.proceed();
+        } catch (Exception e) {
+            log.error("DataPopeDomInterceptor 拦截器发生错误 {} ", e);
+        } finally {
+            //清除线程数据
+            if (null != LOCAL_DATA.get() && (LOCAL_DATA.get().getAllowCount() == 1
+                    || LOCAL_DATA.get().getExistCount().get() >= LOCAL_DATA.get().getAllowCount())) {
+                LOCAL_DATA.remove();
+            }
+        }
+        return invocation.proceed();
     }
 
     @Override
     public Object plugin(Object target) {
-        return target instanceof StatementHandler ? Plugin.wrap(target, this) : target;
+        return Plugin.wrap(target, this);
     }
 
     @Override
     public void setProperties(Properties properties) {
-        //此处可以接收到配置文件的property参数
-        System.out.println("setProperties==" + properties.getProperty("name"));
     }
 
-    public String handlerSql(String sql) {
+    /**
+     * 处理 sql
+     *
+     * @param sql
+     * @return
+     */
+    private String handlerSql(String sql) {
+        //直接拼接
+        if (LOCAL_DATA.get().getIsLast()) {
+            return sql + LOCAL_DATA.get().getWhereSql();
+        }
         //jsqlparser 解析 sql
         Statement stmt = null;
         try {
             stmt = CCJSqlParserUtil.parse(sql);
         } catch (JSQLParserException e) {
-            e.printStackTrace();
+            log.error("jsqlparser 解析 sql 异常 {}", e);
+            LOCAL_DATA.get().getExistCount().addAndGet(1);
             return sql;
         }
+
+        //select SelectItem from FromItem where Expression
         Select select = (Select) stmt;
         SelectBody selectBody = select.getSelectBody();
-        PlainSelect plainSelect = (PlainSelect) selectBody;
-        DataPermission dataPermission = LOCAL_DATA_PERMISSION.get();
-        if (StringUtils.isNotBlank(dataPermission.getAlias())) {
-            setWhereHaveAlias(plainSelect);
-        } else if (!fromItem(plainSelect.getFromItem())) {
-            setWhere(plainSelect);
-        }
+        analysisSelectBody(selectBody);
+        analysisWithItemList(select.getWithItemsList());
         return select.toString();
     }
 
+    private void analysisSelectBody(SelectBody selectBody) {
+        if (selectBody instanceof PlainSelect) {
+            PlainSelect plainSelect = (PlainSelect) selectBody;
+            analysisFromItem(plainSelect.getFromItem(), plainSelect);
+            analysisJoin(plainSelect.getJoins(), plainSelect);
+            //analysisTables(plainSelect.getIntoTables(), plainSelect);
+        }
+        if (selectBody instanceof WithItem) {
+            WithItem withItem = (WithItem) selectBody;
+            analysisSelectBody(withItem.getSelectBody());
+        }
+    }
 
-    public static void setWhereHaveAlias(PlainSelect pls) {
-        DataPermission dataPermission = LOCAL_DATA_PERMISSION.get();
-        FromItem fromItem = pls.getFromItem();
-        String aliasName = Optional.ofNullable(fromItem).map(FromItem::getAlias).map(Alias::getName).orElse("");
-        if (aliasName.equals(dataPermission.getAlias())) {
-            extracted(dataPermission, pls);
+    private void analysisWithItemList(List<WithItem> withItemList) {
+        if (!CollectionUtils.isEmpty(withItemList)) {
+            for (WithItem withItem : withItemList) {
+                analysisSelectBody(withItem.getSelectBody());
+            }
+        }
+
+    }
+
+
+    private void analysisFromItem(FromItem fromItem, PlainSelect plainSelect) {
+        if (fromItem instanceof SubJoin) {
+            SubJoin subJoin = (SubJoin) fromItem;
+            analysisSubJoin(subJoin, plainSelect);
+            analysisFromItem(subJoin.getLeft(), plainSelect);
+            //analysisJoin(subJoin.getJoinList(), plainSelect);
+            analysisJoin(Arrays.asList(subJoin.getJoin()), plainSelect);
+        }
+        if (fromItem instanceof SubSelect) {
+            SubSelect subSelect = (SubSelect) fromItem;
+            analysisSubSelect(subSelect);
+        }
+        if (fromItem instanceof Table) {
+            analysisTable((Table) fromItem, plainSelect);
+        }
+        if (fromItem instanceof LateralSubSelect) {
+            LateralSubSelect lateralSubSelect = (LateralSubSelect) fromItem;
+            if (lateralSubSelect.getSubSelect() != null) {
+                SubSelect subSelect = lateralSubSelect.getSubSelect();
+                analysisSelectBody(subSelect.getSelectBody());
+            }
+        }
+    }
+
+    private void analysisJoin(List<Join> joinList, PlainSelect plainSelect) {
+        if (!CollectionUtils.isEmpty(joinList)) {
+            for (Join join : joinList) {
+                analysisFromItem(join.getRightItem(), plainSelect);
+            }
+        }
+    }
+
+
+    private void analysisSubJoin(SubJoin subJoin, PlainSelect plainSelect) {
+        analysisFromItem(subJoin.getLeft(), plainSelect);
+        //analysisJoin(subJoin.getJoinList(), plainSelect);
+        analysisJoin(Arrays.asList(subJoin.getJoin()), plainSelect);
+    }
+
+    private void analysisSubSelect(SubSelect subSelect) {
+        analysisSelectBody(subSelect.getSelectBody());
+    }
+
+    private void analysisTables(List<Table> tableList, PlainSelect plainSelect) {
+        if (!CollectionUtils.isEmpty(tableList)) {
+            for (Table t : tableList) {
+                analysisTable(t, plainSelect);
+            }
+        }
+    }
+
+    private void analysisTable(Table table, PlainSelect plainSelect) {
+        if (null != table) {
+            log.info("### tableName : {} , alias : {} , setAlias {}", table.getName(), table.getAlias(), LOCAL_DATA.get().getAlias());
+            if (StringUtils.isNotBlank(LOCAL_DATA.get().getAlias())) {
+                //别名定位
+                String alias = Optional.ofNullable(table).map(Table::getAlias).map(Alias::getName).orElse("");
+                if (alias.equals(LOCAL_DATA.get().getAlias())) {
+                    buildWhere(plainSelect);
+                }
+            } else {
+                if (StringUtils.isNotBlank(LOCAL_DATA.get().getTableName())) {
+                    //表名定位
+                    if (table.getName().toUpperCase().equals(LOCAL_DATA.get().getTableName().toUpperCase())) {
+                        buildWhere(plainSelect);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 构建where 条件
+     *
+     * @param plainSelect
+     */
+    private void buildWhere(PlainSelect plainSelect) {
+        if (LOCAL_DATA.get() == null || StringUtils.isBlank(LOCAL_DATA.get().getWhereSql())) {
             return;
         }
-        if (fromItem instanceof SubSelect) {
-            SubSelect subSelect = (SubSelect) fromItem;
-            if (null != subSelect.getSelectBody()) {
-                PlainSelect plainSelect = (PlainSelect) subSelect.getSelectBody();
-                aliasName = Optional.ofNullable(plainSelect).map(PlainSelect::getFromItem).map(FromItem::getAlias).map(Alias::getName).orElse("");
-                if (aliasName.equals(dataPermission.getAlias())) {
-                    extracted(dataPermission, plainSelect);
-                    return;
-                }
-                if (!CollectionUtils.isEmpty(plainSelect.getJoins())) {
-                    Optional<Join> join = plainSelect.getJoins().stream().filter(var -> Optional.ofNullable(var).map(Join::getRightItem)
-                            .map(FromItem::getAlias).map(Alias::getName).orElse("").equals(dataPermission.getAlias())).findFirst();
-                    if (join.isPresent()) {
-                        extracted(dataPermission, plainSelect);
-                        return;
-                    }
-
-                }
-
-            }
+        if (LOCAL_DATA.get().getExistCount().get() >= LOCAL_DATA.get().getAllowCount()) {
+            return;
         }
-    }
-
-    private static void extracted(DataPermission dataPermission, PlainSelect plainSelect) {
-        Expression where = null;
         try {
             String whereSql = plainSelect.getWhere() != null ?
-                    plainSelect.getWhere().toString() + " AND " + dataPermission.getAlias() + "." + dataPermission.getWhereSql()
-                    : dataPermission.getAlias() + "." + dataPermission.getWhereSql();
-            where = CCJSqlParserUtil.parseCondExpression(whereSql);
+                    plainSelect.getWhere().toString() + " AND " + LOCAL_DATA.get().getWhereSql() : LOCAL_DATA.get().getWhereSql();
+            Expression where = CCJSqlParserUtil.parseCondExpression(whereSql);
             plainSelect.setWhere(where);
+            LOCAL_DATA.get().getExistCount().addAndGet(1);
         } catch (JSQLParserException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public boolean fromItem(FromItem fromItem) {
-        if (fromItem instanceof Table) {
-            return false;
-        }
-        if (fromItem instanceof SubSelect) {
-            SubSelect subSelect = (SubSelect) fromItem;
-            if (null != subSelect.getSelectBody()) {
-                PlainSelect plainSelect = (PlainSelect) subSelect.getSelectBody();
-                if (!fromItem(plainSelect.getFromItem())) {
-                    setWhere(plainSelect);
-                    return true;
-                }
-            }
-        }
-        return true;
-    }
-
-    private void setWhere(PlainSelect plainSelect) {
-        StringBuilder stringBuilder = new StringBuilder(" ");
-        if (null != plainSelect.getWhere()) {
-            stringBuilder.append(plainSelect.getWhere().toString());
-            logger.info(" getWhere : " + plainSelect.getWhere().toString());
-        }
-        try {
-            DataPermission dataPermission = LOCAL_DATA_PERMISSION.get();
-            logger.info("数据权限 ： {}", dataPermission.getWhereSql());
-            stringBuilder.append(dataPermission.getWhereSql());
-            if (StringUtils.isNotBlank(stringBuilder.toString())) {
-                Expression where = CCJSqlParserUtil.parseCondExpression(stringBuilder.toString());
-                plainSelect.setWhere(where);
-            }
-        } catch (JSQLParserException e) {
-            e.printStackTrace();
+            log.error(" buildWhere : {}", e);
+            LOCAL_DATA.get().getExistCount().addAndGet(1);
         }
     }
 }

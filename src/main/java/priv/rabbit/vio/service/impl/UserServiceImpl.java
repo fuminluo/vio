@@ -9,6 +9,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 import org.apache.ibatis.cursor.Cursor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import priv.rabbit.vio.common.ResultInfo;
@@ -22,6 +23,7 @@ import priv.rabbit.vio.service.UserService;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static priv.rabbit.vio.common.Constant.JWT_SECRET;
 import static priv.rabbit.vio.common.Constant.TOKEN_EXP_SECENDS;
@@ -36,21 +38,32 @@ public class UserServiceImpl implements UserService {
     @BussAnnotation(moduleName = "人员管理", option = "添加用户")
     @Override
     public ResultInfo save(String username, String password, Integer size) {
-        List list = new ArrayList();
-        for (int i = 0; i < size; i++) {
-            User u = new User();
-            u.setUsername(username);
-            u.setPassword(password);
-            u.setState(1);
-            list.add(u);
-            if ((i % 10000) == 0) {
-                userMapper.insertBatch(list);
-                list.clear();
-            }
+
+        ThreadPoolTaskExecutor pipelineThreadPool = new ThreadPoolTaskExecutor();
+        pipelineThreadPool.setCorePoolSize(24);
+        pipelineThreadPool.initialize();
+
+        for (int n = 0; n < size; n++) {
+            System.out.println("n : " + n);
+            pipelineThreadPool.execute(() -> {
+                List list = new ArrayList(600);
+                for (int i = 0; i > -1; i++) {
+                    User u = new User();
+                    u.setUsername(UUID.randomUUID().toString());
+                    u.setPassword(i + "");
+                    u.setState(1);
+                    list.add(u);
+                    if ((i % 500) == 0) {
+                        i = 0;
+                        int num = userMapper.insertBatch(list);
+                        list.clear();
+                        System.out.println(" 》》》 写入数据 : " + num);
+                    }
+                }
+            });
         }
-        if (!list.isEmpty()) {
-            userMapper.insertBatch(list);
-        }
+
+
         return new ResultInfo(ResultInfo.SUCCESS, ResultInfo.MSG_SUCCESS);
     }
 

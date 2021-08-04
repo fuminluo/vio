@@ -3,11 +3,13 @@ package priv.rabbit.vio.utils;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.session.Configuration;
 import priv.rabbit.vio.entity.Department;
 import priv.rabbit.vio.entity.Employee;
 import priv.rabbit.vio.entity.User;
+import springfox.documentation.spring.web.json.Json;
 
 import java.util.Arrays;
 
@@ -16,27 +18,24 @@ public class PropertyTokenizerTest {
     public static void main(String[] args) {
 
         Employee employee = new Employee();
-
         employee.setLastName("数据库");
 
         Department department = new Department();
         department.setId(1);
         department.setDepartmentName("马化腾");
 
-        Employee employee2 = new Employee();
-        employee2.setEmail("1414");
-        Employee employee3 = new Employee();
-        employee3.setId(12);
+        User user1 = new User();
+        user1.setNickname("张三丰");
+        User user2 = new User();
+        user2.setUsername("张丽丽");
 
-        department.setEmps(Arrays.asList(employee2, employee3));
+        department.setUserList(Arrays.asList(user1,user2));
 
         employee.setDept(department);
 
+        MetaObject metaObject = SystemMetaObject.forObject(employee);
 
-        Configuration configuration = new Configuration();
-        MetaObject metaObject = configuration.newMetaObject(employee);
-
-        System.out.println("==metaObject==" + metaObject.getValue("dept.departmentName"));
+       System.out.println("==metaObject==" + JSONObject.toJSONString(metaObject.getValue("dept.userList[0].nickname")));
 
       /*  System.out.println("==metaObject==" + metaObject.getValue("dept.emps[0].email"));
         System.out.println("==metaObject==" + metaObject.getValue("dept.emps"));

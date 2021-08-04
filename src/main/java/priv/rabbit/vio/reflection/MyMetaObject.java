@@ -1,12 +1,14 @@
 package priv.rabbit.vio.reflection;
 
 import org.apache.ibatis.reflection.MetaObject;
+import org.apache.ibatis.reflection.ReflectionException;
 import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.SystemMetaObject;
 import org.apache.ibatis.reflection.factory.ObjectFactory;
 import org.apache.ibatis.reflection.property.PropertyTokenizer;
 import org.apache.ibatis.reflection.wrapper.*;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,8 @@ public class MyMetaObject {
     private final ObjectFactory objectFactory;
     private final ObjectWrapperFactory objectWrapperFactory;
     private final ReflectorFactory reflectorFactory;
+
+    private boolean isCollection;
 
     MyMetaObject(Object object, ObjectFactory objectFactory, ObjectWrapperFactory objectWrapperFactory, ReflectorFactory reflectorFactory) {
         this.originalObject = object;
@@ -99,11 +103,44 @@ public class MyMetaObject {
             if (metaValue == null) {
                 return null;
             } else {
+                if (isCollection) {
+                    if (metaValue.originalObject instanceof List) {
+                        List<Object> objectList = new ArrayList<>();
+                        for (Object obj : (List) (metaValue.originalObject)) {
+                            System.out.println("** IndexedName = " + prop.getIndexedName() + ", Children = " + prop.getChildren());
+                            MyMetaObject metaObject = MyMetaObject.forObject(obj, objectFactory, objectWrapperFactory, reflectorFactory);
+                            objectList.add(metaObject.getValue(prop.getChildren()));
+                        }
+                        return objectList;
+                    } else if (metaValue.originalObject instanceof Object[]) {
+                        return (Object[]) (metaValue.originalObject);
+                    } else if (metaValue.originalObject instanceof char[]) {
+                        return ((char[]) (metaValue.originalObject));
+                    } else if (metaValue.originalObject instanceof boolean[]) {
+                        return ((boolean[]) (metaValue.originalObject));
+                    } else if (metaValue.originalObject instanceof byte[]) {
+                        return ((byte[]) (metaValue.originalObject));
+                    } else if (metaValue.originalObject instanceof double[]) {
+                        return ((double[]) (metaValue.originalObject));
+                    } else if (metaValue.originalObject instanceof float[]) {
+                        return ((float[]) (metaValue.originalObject));
+                    } else if (metaValue.originalObject instanceof int[]) {
+                        return ((int[]) (metaValue.originalObject));
+                    } else if (metaValue.originalObject instanceof long[]) {
+                        return ((long[]) (metaValue.originalObject));
+                    } else if (metaValue.originalObject instanceof short[]) {
+                        return ((short[]) (metaValue.originalObject));
+                    } else {
+                        throw new ReflectionException("The '" + prop.getName() + "' property of " + metaValue.originalObject + " is not a List or Array.");
+                    }
+                }
                 return metaValue.getValue(prop.getChildren());
             }
         } else {
+            //System.out.println("## IndexedName = " + prop.getIndexedName());
             return objectWrapper.get(prop);
         }
+
     }
 
     public void setValue(String name, Object value) {
@@ -127,6 +164,9 @@ public class MyMetaObject {
 
     public MyMetaObject metaObjectForProperty(String name) {
         Object value = getValue(name);
+        if (value instanceof Collection) {
+            isCollection = true;
+        }
         return MyMetaObject.forObject(value, objectFactory, objectWrapperFactory, reflectorFactory);
     }
 
